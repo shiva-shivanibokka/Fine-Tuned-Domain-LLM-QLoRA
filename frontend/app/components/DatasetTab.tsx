@@ -15,10 +15,10 @@ export default function DatasetTab({ card }: { card: DatasetCard }) {
   const maxCount = Math.max(...dist.map(([, c]) => c));
 
   const tiles = [
-    { big: card.splits.total.toLocaleString(), lbl: "clause examples" },
-    { big: card.splits.train.toLocaleString(), lbl: "train" },
-    { big: card.splits.val.toLocaleString(), lbl: "validation" },
-    { big: card.splits.test.toLocaleString(), lbl: "test" },
+    { big: card.splits.total.toLocaleString(), lbl: "clause examples", tip: "Total labeled clause examples after cleaning — every row the model could learn from or be tested on." },
+    { big: card.splits.train.toLocaleString(), lbl: "train", tip: "Examples the model actually learns from during fine-tuning." },
+    { big: card.splits.val.toLocaleString(), lbl: "validation", tip: "Held out during training to tune settings and watch for overfitting — the model never trains on these." },
+    { big: card.splits.test.toLocaleString(), lbl: "test", tip: "Fully unseen until the final scoring. Every number in the Ablation tab comes from this split." },
   ];
 
   return (
@@ -50,7 +50,10 @@ export default function DatasetTab({ card }: { card: DatasetCard }) {
           {tiles.map((t) => (
             <div className="tile" key={t.lbl}>
               <div className="big">{t.big}</div>
-              <div className="lbl">{t.lbl}</div>
+              <div className="tile-head">
+                <span className="lbl">{t.lbl}</span>
+                <Info tip={t.tip} />
+              </div>
             </div>
           ))}
         </div>
@@ -98,15 +101,24 @@ export default function DatasetTab({ card }: { card: DatasetCard }) {
         >
           <div className="tile">
             <div className="big">{card.answer_length_stats.mean}</div>
-            <div className="lbl">mean answer length (words)</div>
+            <div className="tile-head">
+              <span className="lbl">mean answer length (words)</span>
+              <Info tip="Average length of the correct clause the model must output. Short spans — extraction, not essay writing." />
+            </div>
           </div>
           <div className="tile">
             <div className="big">{card.answer_length_stats.p95}</div>
-            <div className="lbl">95th-pct answer length</div>
+            <div className="tile-head">
+              <span className="lbl">95th-pct answer length</span>
+              <Info tip="95% of answers are shorter than this. Sets the generation budget (MAX_NEW_TOKENS) so the model rarely gets cut off." />
+            </div>
           </div>
           <div className="tile">
             <div className="big">{card.context_length_stats.mean}</div>
-            <div className="lbl">mean context length (words)</div>
+            <div className="tile-head">
+              <span className="lbl">mean context length (words)</span>
+              <Info tip="Average length of the contract excerpt fed in as context. Long inputs are why the model needs a wide context window." />
+            </div>
           </div>
         </div>
       </section>

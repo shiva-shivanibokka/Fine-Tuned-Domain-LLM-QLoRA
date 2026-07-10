@@ -156,20 +156,20 @@ body {
 }
 .stat {
   border-radius: 16px;
-  padding: 1.15rem 1.25rem;
+  padding: 1.15rem 1.25rem 1.15rem 1.4rem;
   background: var(--panel);
   backdrop-filter: blur(12px);
   border: 1px solid var(--border);
   position: relative;
-  overflow: hidden;
 }
 .stat::before {
   content: "";
   position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
+  left: 7px;
+  top: 12px;
+  bottom: 12px;
   width: 3px;
+  border-radius: 3px;
   background: var(--grad);
 }
 .stat .stat-num {
@@ -433,13 +433,13 @@ select.input:focus {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
+  width: 17px;
+  height: 17px;
   margin-left: 0.45rem;
   border-radius: 50%;
-  border: 1px solid var(--border);
-  background: var(--panel-2);
-  color: var(--muted);
+  border: 1px solid color-mix(in srgb, var(--cyan) 55%, transparent);
+  background: color-mix(in srgb, var(--cyan) 20%, var(--panel-2));
+  color: var(--cyan);
   font-size: 10px;
   font-weight: 700;
   font-family: var(--font-mono);
@@ -447,20 +447,27 @@ select.input:focus {
   position: relative;
   vertical-align: middle;
   flex-shrink: 0;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cyan) 9%, transparent);
 }
-.info:hover { color: var(--text); border-color: var(--violet); }
+.info:hover,
+.info:focus-visible {
+  color: #061018;
+  background: var(--cyan);
+  border-color: var(--cyan);
+  outline: none;
+}
 .info::after {
   content: attr(data-tip);
   position: absolute;
-  bottom: calc(100% + 9px);
+  top: calc(100% + 9px);
   left: 50%;
-  transform: translateX(-50%) translateY(4px);
+  transform: translateX(-50%) translateY(-4px);
   width: max-content;
   max-width: 250px;
   padding: 0.65rem 0.8rem;
-  background: #1b1d3a;
+  background: #20244a;
   color: var(--text);
-  border: 1px solid var(--border);
+  border: 1px solid color-mix(in srgb, var(--cyan) 40%, var(--border));
   border-radius: 10px;
   font-size: 0.78rem;
   font-weight: 400;
@@ -469,14 +476,30 @@ select.input:focus {
   text-transform: none;
   letter-spacing: normal;
   text-align: left;
-  box-shadow: 0 14px 34px -12px rgba(0, 0, 0, 0.75);
+  box-shadow: 0 14px 34px -12px rgba(0, 0, 0, 0.85);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.15s ease, transform 0.15s ease;
-  z-index: 30;
+  z-index: 50;
+}
+/* arrow */
+.info::before {
+  content: "";
+  position: absolute;
+  top: calc(100% + 3px);
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-bottom-color: #20244a;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  z-index: 51;
 }
 .info:hover::after,
 .info:focus-visible::after { opacity: 1; transform: translateX(-50%) translateY(0); }
+.info:hover::before,
+.info:focus-visible::before { opacity: 1; }
 
 /* ---- UMAP scatter ---- */
 .umap-svg {
@@ -508,6 +531,52 @@ select.input:focus {
 .umap-legend { display: flex; flex-wrap: wrap; gap: 0.5rem 1.1rem; margin-top: 0.9rem; font-size: 0.76rem; color: var(--muted); }
 .umap-legend .lg { display: inline-flex; align-items: center; gap: 0.45rem; }
 .umap-legend .lg .sw { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
+
+/* ---- UMAP selection pill ---- */
+.sel-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+  padding: 0.55rem 0.65rem 0.55rem 0.9rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--violet) 14%, var(--panel-2));
+  border: 1px solid color-mix(in srgb, var(--violet) 55%, var(--border));
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--violet) 8%, transparent);
+  font-size: 0.82rem;
+}
+.sel-bar .sel-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+.sel-bar .sel-txt { color: var(--text); }
+.sel-bar .sel-txt b { color: var(--violet); }
+.sel-bar .sel-clear {
+  all: unset;
+  margin-left: auto;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  background: var(--panel-solid);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.sel-bar .sel-clear:hover { color: var(--text); border-color: var(--violet); background: color-mix(in srgb, var(--violet) 12%, var(--panel-solid)); }
+
+/* ---- scrollable cluster examples ---- */
+.example-scroll { max-height: 380px; overflow-y: auto; padding-right: 0.4rem; margin-top: 0.4rem; }
+.example-scroll::-webkit-scrollbar { width: 8px; }
+.example-scroll::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--violet) 40%, transparent); border-radius: 8px; }
+.example-scroll::-webkit-scrollbar-track { background: transparent; }
+
+/* info tooltip inside a tile: open above so it isn't clipped at panel bottom */
+.tile .info::after { top: auto; bottom: calc(100% + 9px); transform: translateX(-50%) translateY(4px); }
+.tile .info:hover::after, .tile .info:focus-visible::after { transform: translateX(-50%) translateY(0); }
+.tile .info::before { top: auto; bottom: calc(100% + 3px); border-bottom-color: transparent; border-top-color: #20244a; }
+.tile-head { display: flex; align-items: center; }
 
 /* ---- responsive ---- */
 @media (max-width: 720px) {

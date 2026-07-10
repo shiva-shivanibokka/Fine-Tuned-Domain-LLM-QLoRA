@@ -126,6 +126,19 @@ export default function FailuresTab({ failures }: { failures: Failures }) {
             </button>
           ))}
         </div>
+
+        {active != null && (
+          <div className="sel-bar">
+            <span className="sel-dot" style={{ background: colorFor(active) }} />
+            <span className="sel-txt">
+              Showing <b>{failures.cluster_labels[String(active)]}</b> —{" "}
+              {examples.length} of {pts.length} failures highlighted
+            </span>
+            <button className="sel-clear" onClick={() => setActive(null)}>
+              ✕ Show full map
+            </button>
+          </div>
+        )}
       </section>
 
       {active != null && examples.length > 0 && (
@@ -133,17 +146,19 @@ export default function FailuresTab({ failures }: { failures: Failures }) {
           <div className="panel-head">
             <h2 className="panel-title">
               Inside this cluster
-              <Info tip="Real test cases from the selected cluster: the reference (correct) clause vs. what the model actually produced." />
+              <Info tip="Every test case in the selected cluster: the reference (correct) clause vs. what the model actually produced. Scroll to read them all." />
             </h2>
-            <span className="chip">{examples.length} cases</span>
+            <span className="chip">{examples.length} cases · scroll to see all</span>
           </div>
-          {examples.slice(0, 5).map((e, i) => (
-            <div className="example" key={i}>
-              <div className="ex-clause">{e.clause_type}</div>
-              <div className="ex-ref">Reference — {e.reference}</div>
-              <div className="ex-pred">Predicted — {e.prediction}</div>
-            </div>
-          ))}
+          <div className="example-scroll">
+            {examples.map((e, i) => (
+              <div className="example" key={i}>
+                <div className="ex-clause">{e.clause_type}</div>
+                <div className="ex-ref">Reference — {e.reference}</div>
+                <div className="ex-pred">Predicted — {e.prediction}</div>
+              </div>
+            ))}
+          </div>
         </section>
       )}
     </>

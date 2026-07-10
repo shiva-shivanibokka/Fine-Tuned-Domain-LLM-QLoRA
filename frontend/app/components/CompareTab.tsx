@@ -38,118 +38,120 @@ export default function CompareTab() {
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
-      <section className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5">
-        <h2 className="mb-4 text-sm font-semibold text-zinc-200">
-          Extract a clause
-        </h2>
-        <label className="mb-1.5 block text-xs font-medium text-zinc-400">
-          Contract text
-        </label>
-        <textarea
-          value={contract}
-          onChange={(e) => setContract(e.target.value)}
-          rows={9}
-          className="w-full resize-y rounded-lg border border-zinc-700 bg-zinc-950 p-3 text-sm text-zinc-100 outline-none focus:border-violet-500"
-        />
-        <label className="mb-1.5 mt-4 block text-xs font-medium text-zinc-400">
-          Clause type
-        </label>
-        <select
-          value={clause}
-          onChange={(e) => setClause(e.target.value)}
-          className="w-full rounded-lg border border-zinc-700 bg-zinc-950 p-2.5 text-sm text-zinc-100 outline-none focus:border-violet-500"
-        >
-          {CLAUSE_TYPES.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
-        <button
-          onClick={run}
-          disabled={loading || contract.trim().length < 20}
-          className="mt-4 w-full rounded-lg bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {loading ? "Running both models…" : "Compare base vs. fine-tuned"}
-        </button>
-        <p className="mt-3 text-xs leading-relaxed text-zinc-500">
-          The fine-tuned model runs on a free Hugging Face ZeroGPU Space. The
-          first request after idle may take ~30s while the GPU spins up.
+    <>
+      <section className="panel">
+        <div className="panel-head">
+          <h2 className="panel-title">Extract a clause, live</h2>
+          <span className="chip">base vs. fine-tuned</span>
+        </div>
+        <p className="panel-lead">
+          Paste a contract excerpt, choose a clause type, and watch the base
+          Llama 3.2 3B and the fine-tuned model answer side by side.
         </p>
-      </section>
 
-      <section className="space-y-4">
-        {result?.error && (
-          <div className="rounded-xl border border-amber-800/50 bg-amber-950/30 p-4 text-sm text-amber-300">
-            {result.error}
+        <div style={{ display: "grid", gap: "1.5rem", gridTemplateColumns: "minmax(0,1fr) minmax(0,1.15fr)" }} className="cmp-grid">
+          <div>
+            <div className="field">
+              <label>Contract text</label>
+              <textarea
+                className="input"
+                rows={9}
+                value={contract}
+                onChange={(e) => setContract(e.target.value)}
+              />
+            </div>
+            <div className="field">
+              <label>Clause type to extract</label>
+              <select
+                className="input"
+                value={clause}
+                onChange={(e) => setClause(e.target.value)}
+              >
+                {CLAUSE_TYPES.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button
+              className="btn btn-primary"
+              style={{ width: "100%" }}
+              onClick={run}
+              disabled={loading || contract.trim().length < 20}
+            >
+              {loading ? "Reading the contract…" : "Compare the two analysts"}
+            </button>
+            <p className="note" style={{ marginTop: ".7rem" }}>
+              Inference runs on a free Hugging Face Space; the first request after
+              idle can take ~30s while the model wakes up.
+            </p>
           </div>
-        )}
-        <OutputCard
-          title="Base Llama 3.2 3B"
-          subtitle="No fine-tuning"
-          text={result?.base_output}
-          latency={result?.latency_base_ms}
-          loading={loading}
-          accent="zinc"
-        />
-        <OutputCard
-          title="Fine-tuned (QLoRA + DPO)"
-          subtitle="Trained on CUAD"
-          text={result?.finetuned_output}
-          latency={result?.latency_finetuned_ms}
-          loading={loading}
-          accent="violet"
-        />
-        {result?.base_output != null && (
-          <JudgePanel
-            contract={contract}
-            clause={clause}
-            baseOutput={result.base_output ?? ""}
-            finetunedOutput={result.finetuned_output ?? ""}
-          />
-        )}
+
+          <div style={{ display: "grid", gap: "1rem", alignContent: "start" }}>
+            {result?.error && <div className="callout">{result.error}</div>}
+            <Verdict
+              who="Base Llama 3.2 3B"
+              sub="no fine-tuning"
+              text={result?.base_output}
+              latency={result?.latency_base_ms}
+              loading={loading}
+            />
+            <Verdict
+              who="Fine-tuned"
+              sub="QLoRA + DPO on CUAD"
+              text={result?.finetuned_output}
+              latency={result?.latency_finetuned_ms}
+              loading={loading}
+              ft
+            />
+            {result?.base_output != null && (
+              <JudgePanel
+                contract={contract}
+                clause={clause}
+                baseOutput={result.base_output ?? ""}
+                finetunedOutput={result.finetuned_output ?? ""}
+              />
+            )}
+          </div>
+        </div>
       </section>
-    </div>
+    </>
   );
 }
 
-function OutputCard({
-  title,
-  subtitle,
+function Verdict({
+  who,
+  sub,
   text,
   latency,
   loading,
-  accent,
+  ft,
 }: {
-  title: string;
-  subtitle: string;
+  who: string;
+  sub: string;
   text?: string;
   latency?: number;
   loading: boolean;
-  accent: "zinc" | "violet";
+  ft?: boolean;
 }) {
-  const ring = accent === "violet" ? "border-violet-700/50" : "border-zinc-800";
   return (
-    <div className={`rounded-xl border ${ring} bg-zinc-900/40 p-5`}>
-      <div className="mb-2 flex items-center justify-between">
+    <div className={`verdict ${ft ? "is-ft" : ""}`}>
+      <div className="verdict-head">
         <div>
-          <h3 className="text-sm font-semibold text-zinc-100">{title}</h3>
-          <p className="text-xs text-zinc-500">{subtitle}</p>
+          <span className="who">{who}</span>
+          {ft && <span className="tag" style={{ marginLeft: ".5rem" }}>TUNED</span>}
+          <div className="sub">{sub}</div>
         </div>
-        {latency != null && (
-          <span className="rounded-md bg-zinc-800 px-2 py-1 font-mono text-xs text-zinc-400">
-            {latency} ms
-          </span>
-        )}
+        {latency != null && <span className="latency">{latency} ms</span>}
       </div>
-      <div className="min-h-20 whitespace-pre-wrap rounded-lg bg-zinc-950 p-3 text-sm text-zinc-300">
+      <div className="verdict-body">
         {loading ? (
-          <span className="text-zinc-600">Generating…</span>
+          <span className="empty">Generating…</span>
         ) : text ? (
           text
         ) : (
-          <span className="text-zinc-600">Output will appear here.</span>
+          <span className="empty">The extracted clause will appear here.</span>
         )}
       </div>
     </div>

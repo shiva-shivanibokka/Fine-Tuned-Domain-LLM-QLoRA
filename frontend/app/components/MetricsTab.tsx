@@ -3,100 +3,116 @@ import { MODEL_LABELS } from "@/lib/data";
 import PlaceholderBadge from "@/app/components/PlaceholderBadge";
 
 const ORDER: ModelTag[] = ["base", "qlora", "dpo"];
-const ACCENT: Record<ModelTag, string> = {
-  base: "bg-zinc-500",
-  lora: "bg-sky-500",
-  qlora: "bg-emerald-500",
-  dpo: "bg-violet-500",
+const FILL: Record<ModelTag, string> = {
+  base: "linear-gradient(90deg,#4b4f7a,#6c6f95)",
+  lora: "linear-gradient(90deg,#6366f1,#8b5cf6)",
+  qlora: "linear-gradient(90deg,#6366f1,#8b5cf6)",
+  dpo: "linear-gradient(90deg,#8b5cf6,#f5b642)",
 };
 
+type MetricKey =
+  | "bertscore_f1"
+  | "clause_presence_accuracy"
+  | "hallucination_rate"
+  | "ece";
+const LOWER_BETTER = new Set<MetricKey>(["hallucination_rate", "ece"]);
+
 export default function MetricsTab({ metrics }: { metrics: Metrics }) {
-  const maxF1 = Math.max(...ORDER.map((t) => metrics.models[t].bertscore_f1));
+  const models = ORDER.filter((t) => metrics.models[t]);
+  const maxF1 = Math.max(...models.map((t) => metrics.models[t].bertscore_f1));
+
+  const best = (k: MetricKey) => {
+    const vals = models.map((t) => metrics.models[t][k]);
+    return LOWER_BETTER.has(k) ? Math.min(...vals) : Math.max(...vals);
+  };
 
   return (
-    <div className="space-y-6">
+    <>
       {metrics._placeholder && <PlaceholderBadge />}
 
-      <section className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5">
-        <h2 className="mb-1 text-sm font-semibold text-zinc-200">
-          BERTScore F1 — semantic accuracy by training stage
-        </h2>
-        <p className="mb-5 text-xs text-zinc-500">
-          Higher is better. Each stage builds on the previous one.
+      <section className="panel">
+        <div className="panel-head">
+          <h2 className="panel-title">BERTScore F1 — semantic accuracy</h2>
+          <span className="chip">higher is better</span>
+        </div>
+        <p className="panel-lead">
+          How closely each model&apos;s extraction matches the reference clause,
+          by DeBERTa embedding similarity. Notice fine-tuning barely moves this —
+          the interesting story is in the trust metrics below.
         </p>
-        <div className="space-y-3">
-          {ORDER.map((t) => {
-            const v = metrics.models[t].bertscore_f1;
-            return (
-              <div key={t} className="flex items-center gap-3">
-                <span className="w-40 shrink-0 text-xs text-zinc-400">
-                  {MODEL_LABELS[t]}
-                </span>
-                <div className="h-6 flex-1 overflow-hidden rounded bg-zinc-800">
-                  <div
-                    className={`h-full ${ACCENT[t]} transition-all`}
-                    style={{ width: `${(v / maxF1) * 100}%` }}
-                  />
-                </div>
-                <span className="w-12 shrink-0 text-right font-mono text-xs text-zinc-200">
-                  {v.toFixed(3)}
-                </span>
-              </div>
-            );
-          })}
+        {models.map((t) => {
+          const v = metrics.models[t].bertscore_f1;
+          return (
+            <div className="bar-row" key={t}>
+              <span className="bar-label">{MODEL_LABELS[t]}</span>
+              <span className="bar-track">
+                <span
+                  className="bar-fill"
+                  style={{ width: `${(v / maxF1) * 100}%`, background: FILL[t] }}
+                />
+              </span>
+              <span className="bar-val">{v.toFixed(3)}</span>
+            </div>
+          );
+        })}
+      </section>
+
+      <section className="panel">
+        <div className="panel-head">
+          <h2 className="panel-title">Full ablation</h2>
+          <span className="chip">120-sample test</span>
+        </div>
+        <p className="panel-lead">
+          Best value per metric in <span style={{ color: "var(--gold)" }}>gold</span>.
+          Fine-tuning wins where it matters for legal use — grounding and
+          calibration.
+        </p>
+        <div className="table-scroll">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Model</th>
+                <th>BERTScore F1</th>
+                <th>Clause acc.</th>
+                <th>Hallucination ↓</th>
+                <th>ECE ↓</th>
+                <th>VRAM</th>
+              </tr>
+            </thead>
+            <tbody>
+              {models.map((t) => {
+                const m = metrics.models[t];
+                const cell = (k: MetricKey, v: number, digits = 3) => (
+                  <td className={`num ${v === best(k) ? "best" : ""}`}>
+                    {v.toFixed(digits)}
+                  </td>
+                );
+                return (
+                  <tr key={t}>
+                    <td className="model">{MODEL_LABELS[t]}</td>
+                    {cell("bertscore_f1", m.bertscore_f1)}
+                    {cell("clause_presence_accuracy", m.clause_presence_accuracy)}
+                    {cell("hallucination_rate", m.hallucination_rate)}
+                    {cell("ece", m.ece)}
+                    <td className="num">{m.vram_gb} GB</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       </section>
 
-      <section className="overflow-x-auto rounded-xl border border-zinc-800 bg-zinc-900/40">
-        <table className="w-full min-w-[640px] text-sm">
-          <thead>
-            <tr className="border-b border-zinc-800 text-left text-xs text-zinc-500">
-              <th className="p-3 font-medium">Model</th>
-              <th className="p-3 font-medium">BERTScore F1</th>
-              <th className="p-3 font-medium">G-Eval</th>
-              <th className="p-3 font-medium">Clause Acc.</th>
-              <th className="p-3 font-medium">Halluc. ↓</th>
-              <th className="p-3 font-medium">ECE ↓</th>
-              <th className="p-3 font-medium">VRAM</th>
-            </tr>
-          </thead>
-          <tbody>
-            {ORDER.map((t) => {
-              const m = metrics.models[t];
-              return (
-                <tr
-                  key={t}
-                  className="border-b border-zinc-800/60 last:border-0 text-zinc-300"
-                >
-                  <td className="p-3 font-medium text-zinc-100">
-                    {MODEL_LABELS[t]}
-                  </td>
-                  <td className="p-3 font-mono">{m.bertscore_f1.toFixed(3)}</td>
-                  <td className="p-3 font-mono">
-                    {m.geval_faithfulness?.toFixed(2) ?? "—"}
-                  </td>
-                  <td className="p-3 font-mono">
-                    {m.clause_presence_accuracy.toFixed(3)}
-                  </td>
-                  <td className="p-3 font-mono">
-                    {m.hallucination_rate.toFixed(3)}
-                  </td>
-                  <td className="p-3 font-mono">{m.ece.toFixed(3)}</td>
-                  <td className="p-3 font-mono">{m.vram_gb} GB</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </section>
-
-      <p className="text-xs leading-relaxed text-zinc-500">
-        <span className="text-zinc-300">The story:</span> QLoRA nearly matches
-        full-precision LoRA while cutting VRAM roughly in half (the 4-bit
-        quantization tradeoff), and DPO preference tuning then pushes accuracy,
-        grounding, and calibration (ECE) beyond both — the reason the deployed
-        model is the QLoRA + DPO checkpoint.
-      </p>
-    </div>
+      <div className="callout">
+        <strong>The honest read:</strong> fine-tuning did <em>not</em> beat the
+        base model on BERTScore — the instruction-tuned base is already fluent,
+        and its slightly more verbose answers edge out on overlap. But it cut
+        hallucination and delivered the biggest gain in <strong>calibration</strong>
+        {" "}(ECE {metrics.models.base.ece.toFixed(3)} →{" "}
+        {(metrics.models.dpo ?? metrics.models.qlora).ece.toFixed(3)}). In a
+        legal setting, a model that knows when it&apos;s unsure matters more than
+        one that paraphrases the reference a little closer.
+      </div>
+    </>
   );
 }

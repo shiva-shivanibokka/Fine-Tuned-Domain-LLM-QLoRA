@@ -7,6 +7,8 @@
 ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)
 ![Next.js 16](https://img.shields.io/badge/Next.js-16-black)
 
+**🔗 Live demo: [cuad-legal-llm.vercel.app](https://cuad-legal-llm.vercel.app)** — ablation dashboard, failure explorer, and dataset views run live (the interactive model comparison requires the inference backend below).
+
 ---
 
 ## Recruiter TL;DR
@@ -229,13 +231,9 @@ Unit tests cover the data-pipeline logic most prone to silent breakage (per-clau
 
 ## Deployment
 
-The project is **deploy-ready** on a free stack; hosting is a manual, one-time setup:
-
-1. **Push the trained adapter** to the Hugging Face Hub.
-2. **Create a ZeroGPU Gradio Space** from `space/`, setting `ADAPTER_REPO` and `HF_TOKEN` secrets. (ZeroGPU requires the Gradio SDK Space type; the Space serves an API consumed by the frontend, so no Gradio UI is shown to users.)
-3. **Deploy `frontend/` to Vercel** with root directory `frontend` and env var `HF_SPACE_ID`.
-
-The three static dashboard tabs work immediately from committed data; the live comparison works once the Space is up.
+- **Frontend — live on Vercel:** [cuad-legal-llm.vercel.app](https://cuad-legal-llm.vercel.app), connected to this GitHub repo (root directory `frontend`), so pushes to `main` auto-deploy. The dashboard, failure explorer, and dataset tabs serve committed result snapshots and work with no backend.
+- **Trained adapter — on the Hub:** [`shiva-1993/llama-3.2-3b-cuad-dpo`](https://huggingface.co/shiva-1993/llama-3.2-3b-cuad-dpo).
+- **Inference backend (`space/`):** a Gradio SDK Space that exposes the `compare` / `generate` API the frontend calls (set `ADAPTER_REPO` + `HF_TOKEN`, and `HF_SPACE_ID` on Vercel). Hugging Face now requires a **PRO subscription** to host non-static Spaces, so the live model comparison is enabled on a PRO account (which also unlocks free ZeroGPU); the app is hardware-agnostic and falls back to CPU where a GPU isn't available. Until the backend is connected, the Compare tab shows a "backend not configured" state and the rest of the site is fully functional.
 
 ---
 

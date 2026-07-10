@@ -65,8 +65,14 @@ export default function Dashboard({
               <span className="arrow">→ {dpo.ece.toFixed(2)}</span>
             </div>
             <div className="stat-label">
-              Expected Calibration Error — the model got better at knowing when
-              it&apos;s unsure
+              Calibration error (ECE), base → fine-tuned — lower is better
+              <span
+                className="info"
+                tabIndex={0}
+                data-tip="Expected Calibration Error: how well the model's confidence matches how often it's actually right. It dropped, meaning the fine-tuned model is better at knowing when it's unsure."
+              >
+                i
+              </span>
             </div>
           </div>
           <div className="stat">
@@ -75,7 +81,14 @@ export default function Dashboard({
               <span className="arrow">→ {dpo.hallucination_rate.toFixed(2)}</span>
             </div>
             <div className="stat-label">
-              Hallucination rate — fewer claims ungrounded in the contract text
+              Hallucination rate, base → fine-tuned — lower is better
+              <span
+                className="info"
+                tabIndex={0}
+                data-tip="Fraction of the model's sentences NOT supported by the contract text, checked with a natural-language-inference model. Lower means fewer made-up claims."
+              >
+                i
+              </span>
             </div>
           </div>
           <div className="stat">
@@ -84,8 +97,14 @@ export default function Dashboard({
               <span className="from">GB</span>
             </div>
             <div className="stat-label">
-              Peak training VRAM in 4-bit — the whole ablation fits on a
-              consumer laptop
+              Peak training VRAM in 4-bit
+              <span
+                className="info"
+                tabIndex={0}
+                data-tip="4-bit QLoRA shrinks the frozen model ~4×, so the whole train → evaluate loop fit on an 8 GB laptop GPU."
+              >
+                i
+              </span>
             </div>
           </div>
         </div>

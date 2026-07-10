@@ -39,6 +39,18 @@ export default function CompareTab() {
 
   return (
     <>
+      <div className="tab-intro">
+        <span className="ti-icon">⚖️</span>
+        <span>
+          <b>What this tab does.</b> This is the live demo. Paste a contract,
+          pick a clause type, and both models — the original Llama 3.2 3B and the
+          fine-tuned one — read it and try to extract that clause. Their answers
+          appear side by side as &ldquo;verdicts,&rdquo; and you can optionally
+          have another LLM grade them. It needs the GPU inference backend to be
+          connected; the other three tabs work without it.
+        </span>
+      </div>
+
       <section className="panel">
         <div className="panel-head">
           <h2 className="panel-title">Extract a clause, live</h2>

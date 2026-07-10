@@ -10,7 +10,7 @@ Usage:
 
 from __future__ import annotations
 
-from config import CHECKPOINTS, QLORA_BNB_CONFIG, QLORA_TRAINING_ARGS
+from config import QLORA_BNB_CONFIG, QLORA_TRAINING_ARGS
 from training.train_lora import train
 
 

@@ -40,7 +40,7 @@ HF_TOKEN = os.getenv("HF_TOKEN", "")  # HuggingFace write token
 # Dataset
 # ---------------------------------------------------------------------------
 
-DATASET_NAME = "theatticusproject/cuad-v1"  # CUAD on HuggingFace Hub
+DATASET_NAME = "chenghao/cuad_qa"  # CUAD in SQuAD/QA Parquet format (script-free)
 DATASET_SPLIT = "train"
 TEST_SIZE = 0.15  # 15% held-out test set
 VAL_SIZE = 0.10  # 10% validation
@@ -78,8 +78,15 @@ INSTRUCTION_TEMPLATE = (
 )
 
 # ---------------------------------------------------------------------------
-# Training — Run A: LoRA bf16 (full precision, best quality)
+# Training — Run A: LoRA on an 8-bit base
 # ---------------------------------------------------------------------------
+# A true bf16 3B (6.4GB of weights) overflows an 8GB laptop GPU once the OS
+# display's VRAM is counted — it spills into shared system memory over PCIe and
+# training crawls (~20 min/step at ~31W). Loading the base in 8-bit (~3.4GB)
+# fits with comfortable headroom, so Run A trains fast. The three-stage ablation
+# is therefore a clean quantization-level comparison on real 8GB hardware:
+#   Run A = 8-bit LoRA · Run B = 4-bit QLoRA · Run C = QLoRA + DPO.
+LORA_BNB_CONFIG = dict(load_in_8bit=True)
 
 LORA_CONFIG = dict(
     r=16,
@@ -101,9 +108,13 @@ LORA_CONFIG = dict(
 LORA_TRAINING_ARGS = dict(
     output_dir=str(CHECKPOINTS / "run_a_lora"),
     num_train_epochs=3,
-    per_device_train_batch_size=2,
-    per_device_eval_batch_size=2,
-    gradient_accumulation_steps=8,  # effective batch = 16
+    # 8-bit base leaves VRAM headroom, so we use a larger micro-batch with less
+    # accumulation (same effective batch = 16). Fewer, bigger forward passes keep
+    # the GPU saturated — with batch_size=1 the per-micro-batch Python overhead
+    # left the GPU ~50% idle, making each optimizer step ~65s.
+    per_device_train_batch_size=4,
+    per_device_eval_batch_size=4,
+    gradient_accumulation_steps=4,  # effective batch = 16
     learning_rate=2e-4,
     weight_decay=0.01,
     warmup_ratio=0.05,
@@ -174,8 +185,12 @@ DPO_TRAINING_ARGS = dict(
 # Evaluation
 # ---------------------------------------------------------------------------
 
-MAX_NEW_TOKENS = 256
+MAX_NEW_TOKENS = 128  # clause answers avg ~60 tokens; 128 is ample and ~2x faster
 EVAL_BATCH_SIZE = 4
+# Evaluate on a seeded random subset of the test set to keep runtime tractable on
+# an 8GB laptop GPU (full 174-sample generation at 256 tokens took ~4h across
+# 3 models). 120 stratified-ish samples still give stable metrics.
+EVAL_MAX_SAMPLES = 120
 BERTSCORE_MODEL = "microsoft/deberta-xlarge-mnli"
 EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
@@ -183,7 +198,7 @@ EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 ECE_BINS = 10
 
 # G-Eval judge model (via API — uses Anthropic if key available, else Groq)
-GEVAL_MODEL = os.getenv("GEVAL_MODEL", "claude-haiku-3-5")
+GEVAL_MODEL = os.getenv("GEVAL_MODEL", "claude-haiku-4-5")
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 
@@ -194,4 +209,6 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 API_HOST = "0.0.0.0"
 API_PORT = 8000
 GRADIO_PORT = 7860
-MLFLOW_TRACKING_URI = f"file://{MLRUNS}"
+# Path.as_uri() yields a valid file URI on every OS (file:///C:/... on Windows,
+# with spaces percent-encoded). A bare f"file://{path}" is malformed on Windows.
+MLFLOW_TRACKING_URI = MLRUNS.as_uri()

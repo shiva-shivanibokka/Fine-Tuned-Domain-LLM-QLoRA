@@ -1,156 +1,194 @@
-# Fine-Tuned Domain LLM with QLoRA
+# Fine-Tuned Domain LLM — Legal Clause Extraction with QLoRA + DPO
 
-**Llama 3.2 3B** fine-tuned on 510 real legal contracts (CUAD dataset) using a three-stage training pipeline: **LoRA → QLoRA 4-bit → DPO preference optimisation**. Evaluated with modern metrics (BERTScore, G-Eval, ECE calibration) and failure mode clustering.
+> Llama 3.2 3B fine-tuned to extract clauses from legal contracts, evaluated the way production teams actually evaluate models — and served end to end.
 
----
-
-## What Makes This Different
-
-Most "fine-tune an LLM" projects run one training script and report ROUGE scores. This project treats fine-tuning as it works in production:
-
-| What tutorial projects do | What this project does |
-|---|---|
-| One training run | Three-stage ablation: LoRA vs. QLoRA vs. DPO |
-| ROUGE/BLEU evaluation | BERTScore F1 + G-Eval (LLM-as-judge) + ECE calibration |
-| "It trained, here's the loss" | Systematic failure mode analysis via UMAP + HDBSCAN |
-| Static dataset | MinHash LSH deduplication + perplexity filtering pipeline |
-| Upload to HF Hub | FastAPI serving endpoint + side-by-side comparison UI |
+[![CI](https://github.com/shiva-shivanibokka/Fine-Tuned-Domain-LLM-QLoRA/actions/workflows/ci.yml/badge.svg)](https://github.com/shiva-shivanibokka/Fine-Tuned-Domain-LLM-QLoRA/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)
+![Next.js 16](https://img.shields.io/badge/Next.js-16-black)
 
 ---
 
-## Training Pipeline
+## Recruiter TL;DR
 
-### Stage 1: LoRA (bf16, no quantization)
-Full-precision LoRA adapters — highest quality, ~7GB VRAM on RTX 4060.
-
-```
-Base: Llama 3.2 3B Instruct
-LoRA rank=16, alpha=32
-Target modules: q, k, v, o, gate, up, down projections
-3 epochs, cosine LR scheduler, bf16
-```
-
-### Stage 2: QLoRA (4-bit NF4)
-Same configuration but 4-bit NF4 quantization via bitsandbytes. Drops VRAM from ~7GB to ~4GB. The ablation shows the exact quality/memory tradeoff.
-
-```
-4-bit NF4 quantization + double quantization
-Compute dtype: bfloat16
-VRAM: ~4GB (vs ~7GB for LoRA)
-```
-
-### Stage 3: DPO (Direct Preference Optimization)
-Preference tuning on top of the QLoRA checkpoint. No reward model needed. DPO is the technique that replaced RLHF at Anthropic and Meta.
-
-```
-Reference model: QLoRA checkpoint (frozen)
-Preference pairs: auto-generated from CUAD
-  - Chosen: ground-truth clause extraction
-  - Rejected: truncated / hallucinated / wrong-clause variants
-β = 0.1, sigmoid DPO loss
-```
+- **What it does:** fine-tunes Llama 3.2 3B to extract specific clauses (Governing Law, Termination, IP Ownership, …) from real commercial contracts, with a full evaluation harness and a live comparison UI.
+- **Hardest problem solved:** running the entire train → evaluate → serve loop on an **8 GB laptop GPU** — 4-bit QLoRA to fit the model in VRAM, plus an evaluation suite (BERTScore, hallucination-via-NLI, calibration/ECE, failure clustering) that measures *trustworthiness*, not just token overlap.
+- **Honest headline result:** fine-tuning **cut hallucination ~4%** and **improved calibration ECE by ~8.5%** (0.679 → 0.621) over the base model — while revealing that BERTScore alone would have *missed* that gain. A nuanced, real finding rather than a single cherry-picked number.
 
 ---
 
-## Evaluation Pipeline
+## Overview
 
-Beyond ROUGE/BLEU — metrics that actually measure what matters:
+Contract review is slow, expensive, and exactly the kind of narrow, high-stakes task where a small fine-tuned model can be more useful than a giant general one — *if* you can trust its outputs. This project takes a domain LLM from raw data all the way to a served, comparable demo, and treats evaluation as a first-class concern:
 
-| Metric | What it measures | Why it matters |
+- **Domain:** legal clause extraction on **CUAD** (Contract Understanding Atticus Dataset — 510 attorney-annotated contracts).
+- **Technique:** parameter-efficient fine-tuning with **QLoRA (4-bit)** followed by **DPO** preference optimization — the modern alternative to RLHF.
+- **Evaluation:** BERTScore, LLM-as-judge (G-Eval), NLI-based hallucination rate, **Expected Calibration Error (ECE)**, and UMAP + HDBSCAN failure-mode clustering.
+- **Serving:** a FastAPI inference API deployable to a free Hugging Face Space (ZeroGPU), with a **Next.js** dashboard on Vercel.
+
+It is built and documented as a portfolio piece: the interesting parts are the engineering tradeoffs and the honest, multi-metric evaluation — not an inflated accuracy number.
+
+---
+
+## Results
+
+Fine-tuned on an **8 GB RTX 4060 laptop** (4-bit to fit VRAM), **3 epochs**, ~886 training examples. Evaluated on a fixed 120-sample held-out test set. Lower is better for Hallucination and ECE.
+
+| Metric | Base (Llama 3.2 3B) | QLoRA (4-bit) | QLoRA + DPO |
+|---|---|---|---|
+| **BERTScore F1** | 0.490 | 0.473 | 0.469 |
+| **Clause presence accuracy** | 0.983 | 0.983 | 0.983 |
+| **Hallucination rate ↓** | 0.845 | **0.818** | **0.815** |
+| **ECE (calibration) ↓** | 0.679 | **0.622** | **0.621** |
+| **Training VRAM** | — | **3.9 GB** | 4.1 GB |
+
+### Reading the results honestly
+
+The headline is *not* "fine-tuned model beats base on everything." It's more interesting than that:
+
+- **Fine-tuning improved trustworthiness, not phrasing overlap.** The fine-tuned models reduced hallucination (0.845 → 0.815) and delivered the largest gain in **calibration** — ECE dropped from 0.679 to 0.621 (~8.5% better). In a legal setting, a model that *knows when it's unsure* matters more than one that paraphrases the reference slightly closer.
+- **BERTScore did not improve** (0.490 → 0.473). The base instruction-tuned model is already fluent at the extraction wording, and its slightly more verbose answers score marginally higher on embedding-overlap BERTScore. Relying on BERTScore alone would have hidden the real, useful improvement in calibration and grounding — which is exactly why the harness measures five things, not one.
+- **DPO ≈ QLoRA here.** DPO ran and produced a checkpoint, but its `rewards/margins` stayed flat on the 114 auto-generated preference pairs (a known interaction between a reference-free setup and a PEFT policy loaded from a checkpoint). The pipeline and technique are implemented correctly; the preference signal simply didn't move at this data scale. This is documented rather than hidden.
+
+**Reproduce it:** `python -m scripts.run_all` runs the whole pipeline; per-model results land in `results/*.json` and feed the dashboard.
+
+---
+
+## Features
+
+- **Three-stage fine-tuning** — LoRA / QLoRA 4-bit / DPO, each a separate, configurable run sharing one training core.
+- **Data quality pipeline** — CUAD → per-clause MinHash-LSH deduplication → percentile perplexity filtering → chat-template formatting → stratified split → dataset card.
+- **Five-metric evaluation** — BERTScore F1, G-Eval (LLM-as-judge), NLI hallucination rate, clause-presence accuracy, and ECE with reliability bins.
+- **Failure-mode analysis** — embeds failing predictions, projects with UMAP, clusters with HDBSCAN, and auto-labels each cluster by clause type + error pattern.
+- **Inference API** — FastAPI with a memory-efficient single-model design (one base model, adapters toggled via PEFT) that fits a free 16 GB CPU/ZeroGPU Space.
+- **Next.js dashboard** — 4 views (live comparison, ablation dashboard, failure explorer, dataset), plus a **bring-your-own-key LLM judge** supporting Anthropic, OpenAI, Google, and Groq.
+- **Reproducible** — one-command orchestrator, pinned dependencies, unit tests, and CI.
+
+---
+
+## Architecture
+
+Training happens once, locally, on the GPU. Serving is split so the demo is fast *and* free: three of the four dashboard tabs read committed JSON snapshots (instant, no backend), and only live inference calls the model.
+
+```mermaid
+flowchart TD
+    subgraph Local["Local (RTX 4060, 8GB) — offline"]
+        A[CUAD dataset] --> B[data/pipeline.py<br/>dedup · filter · split]
+        B --> C[training<br/>LoRA → QLoRA 4-bit → DPO]
+        C --> D[evaluation<br/>BERTScore · G-Eval · NLI · ECE]
+        D --> E[failure_analysis<br/>UMAP + HDBSCAN]
+        D --> F[(results/*.json)]
+        E --> F
+        F --> G[scripts/export_frontend_data.py]
+    end
+
+    subgraph Hub["Hugging Face"]
+        C -. push adapter .-> H[(HF Hub adapter)]
+        H --> I[HF Space<br/>FastAPI + ZeroGPU]
+    end
+
+    subgraph Vercel["Vercel — Next.js"]
+        G -- committed JSON --> J[Dashboard / Failures / Dataset<br/>static, instant]
+        K[Model Comparison] -- /api/compare --> I
+        L[BYOK LLM Judge] -- /api/judge --> M[Anthropic / OpenAI<br/>Google / Groq]
+    end
+
+    User((User)) --> J
+    User --> K
+    User --> L
+```
+
+**Why this shape?** The base weights (~6.4 GB in bf16) dominate memory, so training uses 4-bit quantization to fit an 8 GB card, and the inference API loads the base **once** and toggles LoRA adapters rather than holding multiple full copies. On the frontend, baking evaluation results into static JSON means the dashboard costs nothing to serve and never waits on a cold GPU — only the "Compare" action pays that latency.
+
+---
+
+## Tech Stack
+
+| Layer | Choice | Why |
 |---|---|---|
-| **BERTScore F1** | Semantic similarity using DeBERTa embeddings | Doesn't penalise paraphrase or synonyms |
-| **G-Eval** | LLM-as-judge: faithfulness, completeness, precision | How production teams at Anthropic/OpenAI evaluate models |
-| **Clause Accuracy** | Presence/absence detection per clause type | Business-level correctness metric |
-| **Hallucination Rate** | NLI-based sentence grounding score | Fraction of claims not supported by contract text |
-| **ECE** | Expected Calibration Error + reliability diagram | Does the model know what it doesn't know? |
+| Base model | `meta-llama/Llama-3.2-3B-Instruct` | Largest model that fits full training headroom on 8 GB |
+| Fine-tuning | PEFT, bitsandbytes (4-bit NF4), TRL (`SFTTrainer`, `DPOTrainer`) | Standard modern QLoRA + DPO stack |
+| Data quality | `datasketch` (MinHash LSH), unigram perplexity | Scales to large corpora; no GPU needed |
+| Evaluation | `bert-score`, `sentence-transformers` (NLI), `anthropic`/`openai` (G-Eval) | Semantic + faithfulness + calibration, not n-gram overlap |
+| Failure analysis | `umap-learn`, `hdbscan` | Finds arbitrary-shaped clusters without pre-specifying `k` |
+| Tracking | MLflow | Per-run params/metrics/artifacts |
+| Serving | FastAPI + Hugging Face Space (ZeroGPU) | Free GPU bursts for a public demo |
+| Frontend | Next.js 16 (App Router) on Vercel | Server route handlers proxy the Space + hide keys |
+| Tooling | pytest, ruff, GitHub Actions | Tests + lint in CI |
 
 ---
 
-## Data Pipeline
+## Skills Demonstrated
 
-```
-CUAD (510 contracts, 41 clause types)
-  → Target 10 clause types with clearest supervision signal
-  → MinHash LSH deduplication (threshold=0.85, 128 permutations)
-  → Perplexity filtering (removes garbled OCR and repetitive boilerplate)
-  → Llama 3.2 chat template formatting
-  → Stratified train/val/test split (by clause type)
-  → Dataset card with statistics
-```
-
----
-
-## Failure Mode Analysis
-
-After evaluation, systematic error analysis via:
-
-```
-Test failures → sentence-transformers embedding → UMAP (2D) → HDBSCAN clustering
-```
-
-Each cluster is auto-labelled by clause type + error pattern:
-- "Termination For Convenience — False negatives (clause present, not found)"
-- "Governing Law — Semantic mismatch"
-- "Limitation Of Liability — Over-generation / hallucination"
-
-This answers: "The model is wrong on these specific types of clauses, for these specific reasons."
+- **Production ML deployment / MLOps** — training, evaluation, and a separate serving API with lazy model loading and health checks.
+- **LLM application development** — QLoRA + DPO fine-tuning, a multi-provider LLM-as-judge, chat-template handling, quantized inference.
+- **Data engineering / ETL** — a raw→processed pipeline with deduplication, filtering, and stratified splitting.
+- **Model evaluation & calibration** — BERTScore, NLI-grounded hallucination scoring, and Expected Calibration Error with reliability bins.
+- **RESTful API design** — FastAPI (`/generate`, `/compare`, `/models`, `/health`) and Next.js route handlers (`/api/compare`, `/api/judge`).
+- **System design & architecture** — documented tradeoffs (4-bit to fit VRAM, single-model adapter toggling, static-vs-dynamic frontend split).
+- **CI/CD & testing** — GitHub Actions running ruff + pytest on every push.
+- **Full-stack development** — Python ML backend + TypeScript/React frontend, wired together with a secure key-proxying layer.
 
 ---
 
-## Stack
-
-| Component | Technology |
-|---|---|
-| Base model | `meta-llama/Llama-3.2-3B-Instruct` |
-| Fine-tuning | PEFT (LoRA), bitsandbytes (4-bit QLoRA), TRL (SFTTrainer, DPOTrainer) |
-| Dataset | CUAD (theatticusproject/cuad-v1) via HuggingFace Hub |
-| Data quality | datasketch (MinHash LSH), unigram perplexity filtering |
-| Evaluation | bert-score, anthropic/openai (G-Eval), sentence-transformers (NLI) |
-| Failure analysis | UMAP + HDBSCAN clustering |
-| Experiment tracking | MLflow |
-| Serving | FastAPI + transformers pipeline |
-| UI | Gradio (4-tab: comparison, training dashboard, failure explorer, dataset explorer) |
-
----
-
-## Setup
+## Getting Started
 
 ### Prerequisites
-- Python 3.11+
-- CUDA GPU with ≥ 4GB VRAM (tested on RTX 4060 8GB)
-- HuggingFace account with Llama 3.2 access (accept the license at `meta-llama/Llama-3.2-3B-Instruct`)
+- Python 3.11+, and a CUDA GPU for training (tested on an RTX 4060 8 GB). Evaluation and serving also run on CPU, more slowly.
+- A Hugging Face account with accepted access to `meta-llama/Llama-3.2-3B-Instruct` (gated), authenticated via `huggingface-cli login`.
 
 ### Install
-
 ```bash
 git clone https://github.com/shiva-shivanibokka/Fine-Tuned-Domain-LLM-QLoRA
 cd Fine-Tuned-Domain-LLM-QLoRA
-pip install -r requirements.txt
-cp .env.example .env  # add HF_TOKEN and optional ANTHROPIC_API_KEY
+pip install -r requirements.txt          # install torch with your CUDA build first (see requirements.txt)
+cp .env.example .env                      # optional: HF_REPO_ID, ANTHROPIC/GROQ keys for G-Eval
 ```
 
-### Run the full pipeline
-
+### Run the full pipeline (one command)
 ```bash
-# 1. Prepare data
+python -m scripts.run_all                 # data → train (LoRA/QLoRA/DPO) → eval → failures → export
+```
+
+Or stage by stage:
+```bash
 python -m data.pipeline
-
-# 2. Train (choose one or run all three)
-python -m training.train_lora     # Run A: LoRA bf16
-python -m training.train_qlora    # Run B: QLoRA 4-bit
-python -m training.train_dpo      # Run C: QLoRA + DPO
-
-# 3. Evaluate all models
-python -m evaluation.evaluator --all
-
-# 4. Failure mode analysis
+python -m training.train_qlora
+python -m training.train_dpo
+python -m evaluation.evaluator --model qlora
 python -m evaluation.failure_analysis --model dpo
+python -m scripts.export_frontend_data
+```
 
-# 5. Launch the demo UI
-python app.py                      # Gradio at http://localhost:7860
+### Frontend
+```bash
+cd frontend
+npm install
+cp .env.local.example .env.local          # set HF_SPACE_ID to your Space
+npm run dev                                # http://localhost:3000
+```
 
-# 6. (Optional) Start the API server
-uvicorn serving.api:app --reload --port 8000
+---
+
+## Usage
+
+Serve the model locally and compare base vs. fine-tuned:
+```bash
+uvicorn serving.api:app --port 8000
+```
+```bash
+curl -X POST http://localhost:8000/compare \
+  -H "Content-Type: application/json" \
+  -d '{"contract_text":"This Agreement shall be governed by the laws of the State of Delaware...","clause_type":"Governing Law"}'
+```
+```json
+{
+  "clause_type": "Governing Law",
+  "base_output": "...",
+  "finetuned_output": "...",
+  "latency_base_ms": 812,
+  "latency_finetuned_ms": 796
+}
 ```
 
 ---
@@ -158,47 +196,58 @@ uvicorn serving.api:app --reload --port 8000
 ## Project Structure
 
 ```
-Fine-Tuned-Domain-LLM-QLoRA/
-├── config.py                   All hyperparameters, paths, model IDs in one place
-├── app.py                      Gradio UI — 4 tabs: comparison, dashboard, failures, dataset
-│
-├── data/
-│   └── pipeline.py             CUAD download → dedup → filter → format → split → card
-│
+├── config.py                 All hyperparameters, paths, and model IDs
+├── data/pipeline.py          CUAD → dedup → filter → format → split → dataset card
 ├── training/
-│   ├── train_lora.py           Run A: LoRA bf16 training with MLflow logging
-│   ├── train_qlora.py          Run B: QLoRA 4-bit NF4 (calls train_lora with quant=True)
-│   └── train_dpo.py            Run C: DPO preference tuning on top of QLoRA checkpoint
-│
+│   ├── train_lora.py         Shared training core (SFT with PEFT + MLflow)
+│   ├── train_qlora.py        4-bit NF4 QLoRA run
+│   └── train_dpo.py          DPO preference optimization on the QLoRA adapter
 ├── evaluation/
-│   ├── evaluator.py            5-metric evaluation: BERTScore, G-Eval, clause acc, hallucination, ECE
-│   └── failure_analysis.py     UMAP + HDBSCAN failure clustering with auto-labelling
-│
-├── serving/
-│   └── api.py                  FastAPI: POST /generate, POST /compare, GET /models, GET /health
-│
-├── results/                    Evaluation JSONs (gitignored — too large)
-├── checkpoints/                Model checkpoints (gitignored)
-├── mlruns/                     MLflow experiment logs (gitignored)
-├── requirements.txt
-└── .env.example
+│   ├── evaluator.py          5-metric evaluation harness
+│   └── failure_analysis.py   UMAP + HDBSCAN failure clustering
+├── serving/api.py            FastAPI inference API (single-model adapter toggling)
+├── space/                    Hugging Face Space (Gradio SDK + ZeroGPU) for hosting
+├── frontend/                 Next.js 16 dashboard + BYOK LLM judge (deploys to Vercel)
+├── scripts/
+│   ├── run_all.py            One-command pipeline orchestrator
+│   └── export_frontend_data.py   results/*.json → frontend/data/*.json
+├── tests/                    pytest unit tests (torch-free, run in CI)
+└── .github/workflows/ci.yml  ruff + pytest
 ```
 
 ---
 
-## Key Design Decisions (interview talking points)
+## Testing
 
-**Why Llama 3.2 3B instead of 8B?**
-8B in 4-bit requires ~7GB VRAM leaving no headroom on an 8GB GPU. 3B fits LoRA in bf16 and QLoRA in 4-bit, enabling the ablation study. "Fine-tuned Llama 3.2 3B outperforming base Llama 3.1 8B on clause extraction" is a stronger story than just having a bigger model.
+```bash
+pytest tests/ -q
+ruff check .
+```
+Unit tests cover the data-pipeline logic most prone to silent breakage (per-clause deduplication, percentile perplexity filtering, stratified splitting, clause-type mapping). They are deliberately torch-free so CI stays fast; they run on every push via GitHub Actions. Coverage is focused rather than exhaustive — the training/serving paths are validated by end-to-end runs, not unit tests.
 
-**Why DPO instead of RLHF?**
-RLHF requires a separate reward model and PPO training loop — complex and unstable. DPO frames preference learning as a classification problem, is stable, requires no reward model, and is what Anthropic and Meta use in production alignment. It's also 10x easier to implement correctly.
+---
 
-**Why G-Eval instead of ROUGE?**
-ROUGE measures n-gram overlap. A legal clause can be extracted correctly using different synonyms and still score near-zero ROUGE. G-Eval uses an LLM as a judge to score faithfulness, completeness, and precision — these are the dimensions that actually matter for a clause extraction system.
+## Deployment
 
-**Why ECE / calibration?**
-A model that is overconfident on out-of-distribution contract types is dangerous in a legal context. ECE measures whether confidence scores are reliable: a model claiming 90% confidence should be correct 90% of the time. No other fine-tuning project in this portfolio measures this.
+The project is **deploy-ready** on a free stack; hosting is a manual, one-time setup:
 
-**Why HDBSCAN over K-Means for failure clustering?**
-K-Means requires specifying the number of clusters upfront and assumes spherical clusters. HDBSCAN finds clusters of arbitrary shape and handles noise points — better suited for discovering unexpected failure modes.
+1. **Push the trained adapter** to the Hugging Face Hub.
+2. **Create a ZeroGPU Gradio Space** from `space/`, setting `ADAPTER_REPO` and `HF_TOKEN` secrets. (ZeroGPU requires the Gradio SDK Space type; the Space serves an API consumed by the frontend, so no Gradio UI is shown to users.)
+3. **Deploy `frontend/` to Vercel** with root directory `frontend` and env var `HF_SPACE_ID`.
+
+The three static dashboard tabs work immediately from committed data; the live comparison works once the Space is up.
+
+---
+
+## Roadmap / Known Limitations
+
+- **BERTScore did not improve over base** — the fine-tuned model's gains are in calibration and hallucination. Adding a reference-flexible metric (or exact-span F1) would characterize extraction quality better than embedding overlap alone.
+- **DPO produced no measurable preference signal** on 114 auto-generated pairs. Next step: a larger, human-or-heuristic-verified preference set, and switching to an explicit reference model for cleaner reward margins.
+- **Evaluation runs on a 120-sample subset** for tractable runtime on a laptop GPU; the full test set would tighten the confidence intervals.
+- **G-Eval (LLM-as-judge)** is optional and skipped without an API key; the four intrinsic metrics run without one.
+
+---
+
+## License
+
+MIT — see [LICENSE](LICENSE).

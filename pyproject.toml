@@ -1,0 +1,17 @@
+[project]
+name = "cuad-llama-qlora"
+version = "1.0.0"
+description = "Llama 3.2 3B fine-tuned on CUAD legal contracts via LoRA / QLoRA / DPO, with modern evaluation."
+requires-python = ">=3.11"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+ignore = ["E501"]  # line length handled by formatter, not enforced as error
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

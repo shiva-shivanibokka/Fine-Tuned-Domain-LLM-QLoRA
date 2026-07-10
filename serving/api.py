@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import os
 import time
-from functools import lru_cache
+from contextlib import nullcontext
 from pathlib import Path
 from typing import Literal
 
@@ -41,10 +41,14 @@ app = FastAPI(
     version="1.0.0",
 )
 
+# CORS: restrict to the deployed frontend in prod. Set ALLOWED_ORIGINS to a
+# comma-separated list (e.g. "https://your-app.vercel.app"); defaults to "*"
+# for local development only.
+_origins = os.getenv("ALLOWED_ORIGINS", "*")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
+    allow_origins=["*"] if _origins == "*" else [o.strip() for o in _origins.split(",")],
+    allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
 
@@ -91,85 +95,99 @@ class CompareResponse(BaseModel):
 
 
 # ---------------------------------------------------------------------------
-# Model cache (lazy loading — only load when first requested)
+# Shared model (base loaded once; fine-tuned adapters attached on top)
 # ---------------------------------------------------------------------------
+#
+# The base weights (~6GB) are loaded a SINGLE time. Each fine-tuned variant is a
+# LoRA adapter (~100MB) attached to that same base via PEFT. Switching between
+# "base" and any fine-tuned tag is a cheap adapter toggle — total VRAM stays at
+# roughly one model instead of one-per-variant. This is what makes the demo fit
+# on a free 16GB Space (the old code loaded base + fine-tuned as two full copies).
 
-_loaded_models: dict[str, tuple] = {}
+_STATE: dict = {"model": None, "tokenizer": None, "adapters": set()}
+
+
+def _load_kwargs() -> dict:
+    kw = {"token": HF_TOKEN} if HF_TOKEN else {}
+    if torch.cuda.is_available():
+        kw.update(torch_dtype=torch.bfloat16, device_map="auto")
+    else:
+        kw.update(torch_dtype=torch.float32)  # CPU fallback for free Spaces
+    return kw
+
+
+def _ensure_loaded() -> tuple:
+    """Load the base model + tokenizer once. Returns (model, tokenizer)."""
+    if _STATE["model"] is None:
+        login = {"token": HF_TOKEN} if HF_TOKEN else {}
+        tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_ID, **login)
+        tokenizer.pad_token = tokenizer.eos_token
+        tokenizer.padding_side = "left"
+        model = AutoModelForCausalLM.from_pretrained(BASE_MODEL_ID, **_load_kwargs())
+        model.eval()
+        _STATE["model"], _STATE["tokenizer"] = model, tokenizer
+    return _STATE["model"], _STATE["tokenizer"]
+
+
+def _ensure_adapter(tag: ModelTag) -> None:
+    """Attach the fine-tuned adapter for `tag` to the shared model (idempotent)."""
+    if tag == "base" or tag in _STATE["adapters"]:
+        return
+    checkpoint = CHECKPOINT_MAP[tag]
+    if not checkpoint or not Path(checkpoint).exists():
+        raise FileNotFoundError(f"Checkpoint for '{tag}' not found: {checkpoint}")
+    model = _STATE["model"]
+    if isinstance(model, PeftModel):
+        model.load_adapter(checkpoint, adapter_name=tag)
+    else:
+        _STATE["model"] = PeftModel.from_pretrained(model, checkpoint, adapter_name=tag)
+    _STATE["adapters"].add(tag)
 
 
 def get_model(tag: ModelTag) -> tuple:
-    """Return cached (model, tokenizer) for the given tag."""
-    if tag in _loaded_models:
-        return _loaded_models[tag]
-
-    login_kwargs = {"token": HF_TOKEN} if HF_TOKEN else {}
-    checkpoint = CHECKPOINT_MAP[tag]
-
-    tokenizer = AutoTokenizer.from_pretrained(
-        checkpoint or BASE_MODEL_ID,
-        trust_remote_code=True,
-        **login_kwargs,
-    )
-    tokenizer.pad_token = tokenizer.eos_token
-    tokenizer.padding_side = "left"
-
-    if tag == "base":
-        model = AutoModelForCausalLM.from_pretrained(
-            BASE_MODEL_ID,
-            torch_dtype=torch.bfloat16,
-            device_map="auto",
-            trust_remote_code=True,
-            **login_kwargs,
-        )
-    else:
-        base = AutoModelForCausalLM.from_pretrained(
-            BASE_MODEL_ID,
-            torch_dtype=torch.bfloat16,
-            device_map="auto",
-            trust_remote_code=True,
-            **login_kwargs,
-        )
-        model = PeftModel.from_pretrained(base, checkpoint)
-
-    model.eval()
-    _loaded_models[tag] = (model, tokenizer)
-    return model, tokenizer
+    """Ensure base + (optional) adapter are loaded. Returns (model, tokenizer)."""
+    _ensure_loaded()
+    _ensure_adapter(tag)
+    return _STATE["model"], _STATE["tokenizer"]
 
 
-def _format_prompt(contract_text: str, clause_type: str) -> str:
+def _build_messages(contract_text: str, clause_type: str) -> list[dict]:
     user_content = INSTRUCTION_TEMPLATE.format(
         clause_type=clause_type,
         contract_text=contract_text[:600],
     )
-    messages = [
+    return [
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": user_content},
     ]
-    return _apply_chat_template(messages)
-
-
-def _apply_chat_template(messages: list[dict]) -> str:
-    result = "<|begin_of_text|>"
-    for msg in messages:
-        result += f"<|start_header_id|>{msg['role']}<|end_header_id|>\n\n"
-        result += f"{msg['content']}<|eot_id|>"
-    result += "<|start_header_id|>assistant<|end_header_id|>\n\n"
-    return result
 
 
 def _generate_one(
-    model, tokenizer, prompt: str, max_new_tokens: int
+    model, tokenizer, messages: list[dict], max_new_tokens: int, tag: ModelTag
 ) -> tuple[str, int]:
-    """Generate one response. Returns (text, latency_ms)."""
-    t0 = time.monotonic()
+    """Generate one response using the correct adapter (or base). Returns (text, ms)."""
+    # Use the tokenizer's official chat template — matches how Llama 3.2 was
+    # actually trained, rather than a hand-rolled approximation.
+    prompt = tokenizer.apply_chat_template(
+        messages, tokenize=False, add_generation_prompt=True
+    )
     inputs = tokenizer(
-        prompt,
-        return_tensors="pt",
-        truncation=True,
-        max_length=1024,
+        prompt, return_tensors="pt", truncation=True, max_length=1024
     ).to(model.device)
 
-    with torch.no_grad(), torch.cuda.amp.autocast(dtype=torch.bfloat16):
+    # Select adapter: base -> disable all adapters; else activate the tag's adapter.
+    is_peft = isinstance(model, PeftModel)
+    if tag != "base" and is_peft:
+        model.set_adapter(tag)
+    adapter_ctx = (
+        model.disable_adapter() if (tag == "base" and is_peft) else nullcontext()
+    )
+
+    t0 = time.monotonic()
+    with torch.no_grad(), adapter_ctx, torch.autocast(
+        device_type="cuda" if torch.cuda.is_available() else "cpu",
+        dtype=torch.bfloat16 if torch.cuda.is_available() else torch.float32,
+    ):
         output_ids = model.generate(
             **inputs,
             max_new_tokens=max_new_tokens,
@@ -190,9 +208,10 @@ def _generate_one(
 
 @app.get("/health")
 def health():
+    loaded = list(_STATE["adapters"]) + (["base"] if _STATE["model"] else [])
     return {
         "status": "ok",
-        "loaded_models": list(_loaded_models.keys()),
+        "loaded_models": loaded,
         "cuda_available": torch.cuda.is_available(),
         "gpu": torch.cuda.get_device_name(0) if torch.cuda.is_available() else "CPU",
     }
@@ -203,13 +222,11 @@ def list_models():
     available = []
     for tag, ckpt_path in CHECKPOINT_MAP.items():
         exists = (tag == "base") or (ckpt_path is not None and Path(ckpt_path).exists())
+        loaded = (tag == "base" and _STATE["model"] is not None) or (
+            tag in _STATE["adapters"]
+        )
         available.append(
-            {
-                "tag": tag,
-                "path": ckpt_path,
-                "available": exists,
-                "loaded": tag in _loaded_models,
-            }
+            {"tag": tag, "path": ckpt_path, "available": exists, "loaded": loaded}
         )
     return {"models": available}
 
@@ -221,8 +238,10 @@ def generate(req: GenerateRequest):
     except Exception as e:
         raise HTTPException(status_code=503, detail=f"Model loading failed: {e}")
 
-    prompt = _format_prompt(req.contract_text, req.clause_type)
-    text, ms = _generate_one(model, tokenizer, prompt, req.max_new_tokens)
+    messages = _build_messages(req.contract_text, req.clause_type)
+    text, ms = _generate_one(
+        model, tokenizer, messages, req.max_new_tokens, req.model_tag
+    )
 
     return GenerateResponse(
         clause_type=req.clause_type,
@@ -232,25 +251,29 @@ def generate(req: GenerateRequest):
     )
 
 
+def _best_ft_tag() -> ModelTag:
+    for tag in ("dpo", "qlora", "lora"):
+        if (CHECKPOINT_MAP[tag] is not None) and Path(CHECKPOINT_MAP[tag]).exists():
+            return tag
+    raise FileNotFoundError("No fine-tuned checkpoint found. Train a model first.")
+
+
 @app.post("/compare", response_model=CompareResponse)
 def compare(req: CompareRequest):
-    """Run base and best fine-tuned model side by side."""
+    """Run base and best fine-tuned variant side by side on ONE shared model."""
     try:
-        base_model, base_tok = get_model("base")
-        ft_tag = (
-            "dpo"
-            if (CHECKPOINTS / "run_c_dpo").exists()
-            else "qlora"
-            if (CHECKPOINTS / "run_b_qlora").exists()
-            else "lora"
-        )
-        ft_model, ft_tok = get_model(ft_tag)
+        ft_tag = _best_ft_tag()
+        model, tokenizer = get_model(ft_tag)  # loads base + best adapter once
     except Exception as e:
         raise HTTPException(status_code=503, detail=f"Model loading failed: {e}")
 
-    prompt = _format_prompt(req.contract_text, req.clause_type)
-    base_text, base_ms = _generate_one(base_model, base_tok, prompt, req.max_new_tokens)
-    ft_text, ft_ms = _generate_one(ft_model, ft_tok, prompt, req.max_new_tokens)
+    messages = _build_messages(req.contract_text, req.clause_type)
+    base_text, base_ms = _generate_one(
+        model, tokenizer, messages, req.max_new_tokens, "base"
+    )
+    ft_text, ft_ms = _generate_one(
+        model, tokenizer, messages, req.max_new_tokens, ft_tag
+    )
 
     return CompareResponse(
         clause_type=req.clause_type,

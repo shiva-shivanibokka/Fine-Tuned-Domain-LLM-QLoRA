@@ -30,8 +30,11 @@ import time
 from pathlib import Path
 
 import mlflow
-import torch
+
+# `datasets` (pyarrow) MUST precede `torch` — see note in train_lora.py.
 from datasets import Dataset
+
+import torch
 from peft import PeftModel
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from trl import DPOConfig, DPOTrainer
@@ -45,8 +48,6 @@ from config import (
     HF_TOKEN,
     MLFLOW_TRACKING_URI,
     QLORA_BNB_CONFIG,
-    SYSTEM_PROMPT,
-    INSTRUCTION_TEMPLATE,
 )
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -171,7 +172,7 @@ def run_dpo(qlora_checkpoint: str | None = None) -> str:
         log.error("Processed data not found. Run: python -m data.pipeline first.")
         sys.exit(1)
 
-    val_data = json.loads(val_path.read_text())
+    val_data = json.loads(val_path.read_text(encoding="utf-8"))
     preference_pairs = build_preference_dataset(val_data)
 
     if not preference_pairs:
@@ -223,14 +224,10 @@ def run_dpo(qlora_checkpoint: str | None = None) -> str:
         )
         model.config.use_cache = False
 
-        # Reference model (frozen base for DPO KL divergence)
-        ref_model = AutoModelForCausalLM.from_pretrained(
-            BASE_MODEL_ID,
-            quantization_config=bnb_config,
-            device_map="auto",
-            trust_remote_code=True,
-            **login_kwargs,
-        )
+        # No explicit reference model: with a PEFT/LoRA policy, TRL computes the
+        # DPO reference log-probs by temporarily disabling the adapters on the
+        # same base model. This halves VRAM vs. loading a second frozen copy —
+        # essential on an 8GB GPU.
 
         tokenizer = AutoTokenizer.from_pretrained(
             BASE_MODEL_ID,
@@ -259,16 +256,15 @@ def run_dpo(qlora_checkpoint: str | None = None) -> str:
             warmup_ratio=DPO_TRAINING_ARGS["warmup_ratio"],
             beta=DPO_CONFIG["beta"],
             max_length=DPO_CONFIG["max_length"],
-            max_prompt_length=DPO_CONFIG["max_prompt_length"],
             loss_type=DPO_CONFIG["loss_type"],
         )
 
         trainer = DPOTrainer(
             model=model,
-            ref_model=ref_model,
+            ref_model=None,  # PEFT policy: TRL disables adapters for the reference
             args=dpo_args,
             train_dataset=dpo_dataset,
-            tokenizer=tokenizer,
+            processing_class=tokenizer,  # TRL 1.x renamed tokenizer -> processing_class
         )
 
         log.info("Starting DPO training...")

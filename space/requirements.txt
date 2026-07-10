@@ -1,0 +1,7 @@
+spaces
+gradio>=5.0
+transformers>=4.55
+peft>=0.15
+accelerate>=1.0
+torch
+huggingface_hub

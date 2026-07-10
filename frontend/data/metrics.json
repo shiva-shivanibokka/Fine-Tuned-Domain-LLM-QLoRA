@@ -1,0 +1,28 @@
+{
+  "models": {
+    "base": {
+      "bertscore_f1": 0.48976343870162964,
+      "geval_faithfulness": null,
+      "clause_presence_accuracy": 0.9833,
+      "hallucination_rate": 0.8454,
+      "ece": 0.6786,
+      "vram_gb": 6.8
+    },
+    "qlora": {
+      "bertscore_f1": 0.47289302945137024,
+      "geval_faithfulness": null,
+      "clause_presence_accuracy": 0.9833,
+      "hallucination_rate": 0.8178,
+      "ece": 0.6218,
+      "vram_gb": 3.9
+    },
+    "dpo": {
+      "bertscore_f1": 0.46914705634117126,
+      "geval_faithfulness": null,
+      "clause_presence_accuracy": 0.9833,
+      "hallucination_rate": 0.8147,
+      "ece": 0.6208,
+      "vram_gb": 4.1
+    }
+  }
+}

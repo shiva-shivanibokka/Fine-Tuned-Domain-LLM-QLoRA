@@ -18,9 +18,13 @@ from __future__ import annotations
 import argparse
 import json
 import logging
-from pathlib import Path
 
 import numpy as np
+
+# `datasets`/pyarrow must be imported before torch (which sentence_transformers
+# pulls in) to avoid a Windows import-order segfault. See training/train_lora.py.
+import datasets  # noqa: F401
+
 from sentence_transformers import SentenceTransformer
 
 from config import EMBED_MODEL, RESULTS
@@ -35,16 +39,24 @@ def load_eval_results(tag: str) -> dict:
     path = RESULTS / f"{tag}_eval.json"
     if not path.exists():
         raise FileNotFoundError(f"No eval results for {tag}. Run evaluator first.")
-    return json.loads(path.read_text())
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 def identify_failures(results: dict) -> list[dict]:
-    """Extract prediction samples that scored below the failure threshold."""
-    samples = results.get("predictions_sample", [])
+    """Extract predictions that scored below the failure threshold (real failures)."""
+    samples = results.get("predictions") or results.get("predictions_sample", [])
     if not samples:
-        raise ValueError("No predictions_sample in results. Re-run evaluator.")
-    # In a full run we'd have all predictions; for the sample we use BERTScore proxy
-    return samples  # All samples used for clustering — scored samples are the failures
+        raise ValueError("No predictions in results. Re-run evaluator.")
+    failures = [
+        s
+        for s in samples
+        if s.get("bertscore_f1", 1.0) < FAILURE_BERTSCORE_THRESHOLD
+    ]
+    log.info(
+        f"Identified {len(failures)}/{len(samples)} failures "
+        f"(BERTScore F1 < {FAILURE_BERTSCORE_THRESHOLD})."
+    )
+    return failures
 
 
 def embed_failures(failures: list[dict]) -> np.ndarray:
@@ -84,8 +96,8 @@ def cluster_with_hdbscan(embeddings: np.ndarray) -> np.ndarray:
 
         log.info("Clustering with HDBSCAN...")
         clusterer = hdbscan.HDBSCAN(
-            min_cluster_size=max(3, len(embeddings) // 10),
-            min_samples=2,
+            min_cluster_size=max(4, len(embeddings) // 20),
+            min_samples=1,  # permissive: surface small failure modes, less noise
             metric="euclidean",
         )
         return clusterer.fit_predict(embeddings)
@@ -193,12 +205,11 @@ def run_failure_analysis(tag: str) -> dict:
     }
 
     out_path = RESULTS / f"{tag}_failures.json"
-    out_path.write_text(json.dumps(output, indent=2))
+    out_path.write_text(json.dumps(output, indent=2), encoding="utf-8")
     log.info(f"Failure analysis saved to {out_path}")
 
     print(f"\nFound {output['n_clusters']} failure clusters:")
     for cid, label in cluster_labels.items():
-        count = sum(1 for d in cluster_data if d["cluster_id"] == cid)
         print(f"  Cluster {cid}: {label}")
 
     return output

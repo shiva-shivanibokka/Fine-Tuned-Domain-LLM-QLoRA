@@ -1,0 +1,40 @@
+{
+  "dataset": "chenghao/cuad_qa",
+  "target_clauses": [
+    "Governing Law",
+    "Termination For Convenience",
+    "Limitation Of Liability",
+    "Indemnification",
+    "Non-Compete",
+    "IP Ownership Assignment",
+    "Audit Rights",
+    "Change Of Control",
+    "Most Favored Nation",
+    "Anti-Assignment"
+  ],
+  "splits": {
+    "train": 886,
+    "val": 115,
+    "test": 174,
+    "total": 1175
+  },
+  "clause_distribution": {
+    "Governing Law": 320,
+    "Anti-Assignment": 271,
+    "Change Of Control": 82,
+    "Audit Rights": 163,
+    "Non-Compete": 87,
+    "Termination For Convenience": 135,
+    "IP Ownership Assignment": 95,
+    "Most Favored Nation": 22
+  },
+  "answer_length_stats": {
+    "mean": 45.2,
+    "median": 35.0,
+    "p95": 107.3
+  },
+  "context_length_stats": {
+    "mean": 799.5,
+    "median": 801.0
+  }
+}

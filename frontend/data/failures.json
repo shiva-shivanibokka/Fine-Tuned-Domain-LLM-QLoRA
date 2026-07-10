@@ -1,0 +1,1212 @@
+{
+  "model_tag": "dpo",
+  "n_failures": 120,
+  "n_clusters": 2,
+  "cluster_labels": {
+    "0": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+    "1": "Anti-Assignment \u2014 Over-generation / hallucination (28 examples)",
+    "-1": "Noise / Outliers"
+  },
+  "cluster_data": [
+    {
+      "index": 0,
+      "clause_type": "Governing Law",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 6.975597858428955,
+      "umap_y": 11.967248916625977,
+      "prediction": "assigned to a device. \"Material Breach\" means the material breach of any term of this Agreement by either party, which breach has not been cured or waived by the other party, and which has caused material and/or irreparable harm to the other party. \"Non-Disclosure Agreement\" means the Non-Disclosure",
+      "reference": "This Agreement will be governed by the substantive laws of the State of New York, without regard for its conflict of laws provisions."
+    },
+    {
+      "index": 1,
+      "clause_type": "Governing Law",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 6.7866668701171875,
+      "umap_y": 14.252716064453125,
+      "prediction": "without limitation, television, radio, print, direct mail, point of purchase, in-store displays, and on-line advertising. North's Endorsement shall be limited to a maximum of 30 seconds in length. North's Endorsement shall be limited to a maximum of 30 seconds in length. North's Endorsement shall be",
+      "reference": "The Agreement shall be governed by and construed under the laws of the State of Florida in the United States of America,  and venue for any such legal action shall be in the Circuit Court or County Court in Orlando, FL or the U.S. District Court having jurisdiction  over Orlando, FL."
+    },
+    {
+      "index": 2,
+      "clause_type": "Governing Law",
+      "cluster_id": 1,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (28 examples)",
+      "umap_x": 8.621390342712402,
+      "umap_y": 13.37372875213623,
+      "prediction": "1.12 \"Annual Plan\" means the plan for the promotion and marketing of the Product for each of the Agreement Quarters, which will be developed by Depomed and King and approved by the parties, which will include, among other things, the number of Samples to be distributed, the number of Promotional Mat",
+      "reference": "This Agreement will be construed under and in accordance with, and governed in all respects by, the laws of the State of New York, without regard to its conflicts of law principles."
+    },
+    {
+      "index": 3,
+      "clause_type": "Governing Law",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 8.077994346618652,
+      "umap_y": 14.915104866027832,
+      "prediction": "in effect, multiplied by [ ] basis points, and then divided by four. The resulting number shall be the fee for that quarter. 4. Limitation of Liability. In the event that Company receives inquiries about the Funds from persons outside the Company, Company agrees to respond to such inquiries in a man",
+      "reference": "This Agreement shall be construed and the provisions hereof interpreted under and in accordance with the laws of the Commonwealth of Massachusetts."
+    },
+    {
+      "index": 4,
+      "clause_type": "Governing Law",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 6.394491672515869,
+      "umap_y": 13.769360542297363,
+      "prediction": "days of receipt thereof. 6. Use of Celebrity Attributes. HDS shall have the right to use the Celebrity Attributes in connection with the Commercial and the Website. HDS shall have the right to use the Celebrity Attributes in connection with Clotamin-related press releases. 7. Ownership. HDS shall be",
+      "reference": "Regardless of the place of execution hereof, this Agreement, all amendments hereto, and any and all  issues or controversies arising here from or related hereto, shall be governed by and construed exclusively in  accordance with the laws and decisions of the State of Georgia."
+    },
+    {
+      "index": 5,
+      "clause_type": "Governing Law",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 8.959165573120117,
+      "umap_y": 14.128633499145508,
+      "prediction": "materials, text, images, music, sound effects, etc. that the Developer will use in the development of the Project. The Developer will be responsible for the development of the Project. The Developer will be responsible for the testing of the Project. The VAL will be responsible for the testing of th",
+      "reference": "This agreement shall be construed, interpreted and governed by and in accordance with the laws of Hong Kong."
+    },
+    {
+      "index": 6,
+      "clause_type": "Governing Law",
+      "cluster_id": 1,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (28 examples)",
+      "umap_x": 8.437697410583496,
+      "umap_y": 15.486822128295898,
+      "prediction": "any amounts owed by Marketing Affiliate. 3. Term. This Agreement shall commence on the Effective Date and shall continue for a period of one (1) year, unless terminated earlier in accordance with the terms of this Agreement. 4. Termination. Marketing Affiliate may terminate this Agreement at any tim",
+      "reference": "This Agreement is governed by and construed in accordance with the laws of the State of Virginia."
+    },
+    {
+      "index": 7,
+      "clause_type": "Governing Law",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 7.68384313583374,
+      "umap_y": 14.247559547424316,
+      "prediction": "the Commission for additional information or documents, and the Company has filed with the Commission all such additional information or documents as required by the Commission to the extent required by the Commission. The Company has filed with the Commission a registration statement on Form N-14D ",
+      "reference": "This Agreement shall be governed by, and construed in accordance with, the laws of the State of New York."
+    },
+    {
+      "index": 8,
+      "clause_type": "Governing Law",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 7.348665237426758,
+      "umap_y": 13.825727462768555,
+      "prediction": "1.3. Licensee's Use. The Licensee shall use the Licensed Mark only in connection with the Licensed Services and only in the Territory. The Licensee shall not use the Licensed Mark in any other capacity or in any other field of business or activity, except as specifically authorized by the Licensor i",
+      "reference": "This Agreement shall be governed by, and construed in accordance with, the laws of the State of New York without giving effect to the principles of conflicts of law rules."
+    },
+    {
+      "index": 9,
+      "clause_type": "Governing Law",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 7.449674129486084,
+      "umap_y": 11.762347221374512,
+      "prediction": "Chrome Browser, then the Chrome Browser Installer. \"Install Failed\" occurs when an End User fails to complete the install process for a Bundle and the install failed screen is shown to the End User in accordance with Exhibit B. \"Intellectual Property Rights\" means all rights in and to the Products, ",
+      "reference": "This Agreement is governed by English law and the parties submit to the exclusive jurisdiction of the English courts in  relation to any dispute (contractual or non-contractual) concerning this Agreement save that either party may apply to any court for an  injunction or other relief to protect its "
+    },
+    {
+      "index": 10,
+      "clause_type": "Governing Law",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 7.547680854797363,
+      "umap_y": 12.100260734558105,
+      "prediction": "defined below) to the Software. 1.11 \"SOFTWARE MARKETPLACE\" means the web-based site on the Internet at http://www.marketplace.com/ where the Software and MarketSite.net Service are made available for demonstration purposes only. 1.12 \"SOFTWARE USER LICENSE\" means the license granted to Corio by Com",
+      "reference": "This Agreement shall be governed by         the laws of the State of California, USA, excluding conflict of laws         provisions and excluding the 1980 United Nations Convention on Contracts         for the International Sale of Goods."
+    },
+    {
+      "index": 11,
+      "clause_type": "Governing Law",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 7.302868843078613,
+      "umap_y": 12.548686027526855,
+      "prediction": "Web) and any and all sub-domains, domain names, and other Internet addresses used by such person or entity. SECTION 2. CO-BRANDED PAGES 2.1. Snap will provide Sponsor with access to the Snap Web Site and will provide Sponsor with the opportunity to link to the Co-Branded Pages from the Sponsor Web S",
+      "reference": "This Agreement shall be governed by, and construed in accordance with, the laws of the State of California without reference to its choice of law rules."
+    },
+    {
+      "index": 12,
+      "clause_type": "Governing Law",
+      "cluster_id": 1,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (28 examples)",
+      "umap_x": 8.489238739013672,
+      "umap_y": 14.785414695739746,
+      "prediction": "by the Franchisor to the Franchisee shall be as agreed by the parties from time to time. (c) The Franchisee shall not sell or otherwise dispose of the products and services of the Franchisor to any third party without the prior written consent of the Franchisor. (d) The Franchisee shall not sell or ",
+      "reference": "The parties hereto have expressly agreed that this Agreement shall be governed by, and construed in accordance with, the laws of the State of New York, applicable to contracts executed and fully to be performed therein, to the exclusion of any other applicable body of governing law."
+    },
+    {
+      "index": 13,
+      "clause_type": "Governing Law",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 5.831254005432129,
+      "umap_y": 13.07378101348877,
+      "prediction": "the Separation Agreement, SpinCo will distribute to Honeywell certain assets, including intellectual property rights, and SpinCo will transfer to Honeywell certain intellectual property rights; and WHEREAS, SpinCo and Honeywell desire to provide for the assignment of certain SpinCo intellectual prop",
+      "reference": "Any disputes arising out of or relating to this Agreement, including to its execution, performance or enforcement, shall be governed by, and construed in accordance with, the Laws of the State of New York, regardless of the Laws that might otherwise govern under applicable principles of conflicts of"
+    },
+    {
+      "index": 14,
+      "clause_type": "Governing Law",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 7.191442489624023,
+      "umap_y": 13.073371887207031,
+      "prediction": "Channel in the Excite Shopping Channel. iii) For the term of the Agreement, Excite will display a text and/or graphic link (consistent with the format used on similar links on the same page) to the NetGrocer Site on the \"Such a Deal\" promotion in the Gourmet and Groceries department of the Excite Sh",
+      "reference": "This Agreement will be governed by and                   construed in accordance with the laws of the State of                   California, notwithstanding the actual state or country of                   residence or incorporation of NetGrocer."
+    },
+    {
+      "index": 15,
+      "clause_type": "Governing Law",
+      "cluster_id": 1,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (28 examples)",
+      "umap_x": 8.398053169250488,
+      "umap_y": 14.457119941711426,
+      "prediction": "[***] Units per Contract Period, subject to the availability of the Products and the terms and conditions of this Agreement. Heritage shall have the right (but not the obligation) to decline any such order. Heritage shall have the right to decline any order for Products that Heritage determines is n",
+      "reference": "All matters relating to this Agreement, the rights of the Parties hereunder and the construction of the terms hereof shall be governed by the laws of the State of California, without regard to conflicts of laws principles."
+    },
+    {
+      "index": 16,
+      "clause_type": "Governing Law",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 6.692699432373047,
+      "umap_y": 12.449148178100586,
+      "prediction": ".7 \"Energous Patents\" means all patents, patent applications, patent-related intellectual property, trademarks, trade names, copyrights, trade secrets, know-how, and other intellectual property rights and related trademarks, trade dress, service marks, domain names, and other intellectual property r",
+      "reference": "This Agreement will be governed by and construed in accordance with the laws of the State of California, exclusive of conflict of laws principles."
+    },
+    {
+      "index": 17,
+      "clause_type": "Governing Law",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 7.895082473754883,
+      "umap_y": 11.869187355041504,
+      "prediction": "used in the future. \"Launch\" means the date on which the Mobile Product is available for distribution by Distributor. \"Mobile Product\" means the Mobile Application and the Mobile Product Bundles. \"Mobile Application\" means the software application that allows for the distribution of IMNTV content to",
+      "reference": "This Agreement will be governed by the laws of the State of Florida without regard to conflicts of law provisions."
+    },
+    {
+      "index": 18,
+      "clause_type": "Governing Law",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 5.383340835571289,
+      "umap_y": 13.084407806396484,
+      "prediction": "information, and regulatory information) provided by GALEN to LEO regarding the Product. 1.9 \"Galen Information\" means any information (including, but not limited to, technical improvements, financial and marketing information, and regulatory information) provided by LEO to GALEN regarding the Combi",
+      "reference": "THIS AGREEMENT SHALL BE GOVERNED BY AND CONSTRUED IN ACCORDANCE WITH THE INTERNAL LAWS OF THE STATE OF NEW YORK APPLICABLE TO AGREEMENTS MADE AND TO BE PERFORMED ENTIRELY WITHIN SUCH STATE, WITHOUT REGARD TO THE CONFLICTS OF LAW PRINCIPLES OF SUCH STATE OTHER THAN SECTIONS 5-1401 OF THE NEW YORK GEN"
+    },
+    {
+      "index": 19,
+      "clause_type": "Governing Law",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 8.887514114379883,
+      "umap_y": 13.476340293884277,
+      "prediction": "of the Research Program. Anixa will (a) perform its own activities set forth in the Research Plan (such activities, collectively, the \"Research Program\") and (b) obtain any authorizations, approvals and licenses required for performance of the Research Program. 2.2 Selection Notice. The Selection No",
+      "reference": "This Agreement and the rights and obligations of the Parties hereunder will be governed by the laws of the State of Delaware without regard to the conflict of laws provisions of any jurisdiction."
+    },
+    {
+      "index": 20,
+      "clause_type": "Governing Law",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 9.648107528686523,
+      "umap_y": 15.003779411315918,
+      "prediction": ". 2.2 Bioamber shall pay Cargill the fees set forth in the Work Plan. 2.3 Cargill shall be entitled to receive additional payments from Bioamber for the successful completion of the Work Plan as follows: 2.3.1 A payment of One Hundred Fifty Thousand U.S. Dollars ($150,000.00) within thirty (30) days",
+      "reference": "This Development Agreement shall be governed by and construed in accordance with the laws of the State of Minnesota,  United States of America, disregarding its conflicts of law rules."
+    },
+    {
+      "index": 21,
+      "clause_type": "Governing Law",
+      "cluster_id": 1,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (28 examples)",
+      "umap_x": 8.846782684326172,
+      "umap_y": 15.647504806518555,
+      "prediction": "until the end of the first anniversary of the Effective Date, unless terminated earlier in accordance with the provisions of this Agreement. Upon the expiration of the initial term, unless terminated earlier in accordance with the provisions of this Agreement, this Agreement shall automatically rene",
+      "reference": "This Agreement shall be governed by the laws of the province of Ontario, Canada, without regard to its conflict of laws principles."
+    },
+    {
+      "index": 22,
+      "clause_type": "Governing Law",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 9.225587844848633,
+      "umap_y": 12.425614356994629,
+      "prediction": ", a non-exclusive, non-transferable license to use the EMV firmware in the Territory solely for the purpose of manufacturing Products to fulfill Purchase Orders for EMV. 3. MANUFACTURING PROCESS 3.1 EMV Manufacturing Process. EMV will provide Manufacturer with the EMV Manufacturing Process, which in",
+      "reference": "This Agreement shall be governed by and construed under the laws of Hong Kong without regard to choice of laws principles."
+    },
+    {
+      "index": 23,
+      "clause_type": "Governing Law",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 8.219400405883789,
+      "umap_y": 12.143810272216797,
+      "prediction": "selling such products and services to customers, and providing AMR services to customers. LKPL will provide Axiometric with access to LKPL's AMR product suite and AMR services. Axiometric will provide LKPL with access to Axiometric's AMR product suite and AMR services. LKPL and Axiometric will joint",
+      "reference": "This Agreement shall be construed and governed in accordance                   with the laws of the State of Maryland regardless of the place                   or places of its physical execution and performance."
+    },
+    {
+      "index": 24,
+      "clause_type": "Governing Law",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 8.405056953430176,
+      "umap_y": 13.596784591674805,
+      "prediction": "mean a calendar day. \"Daylight Time\" shall mean Daylight Time, as designated by the Federal Time and Standards Department of the U.S. Department of Transportation. \"Daylight Time Date\" shall have the meaning given to such term in Section 2.2 of this Agreement. \"Daylight Time Period\" shall have the m",
+      "reference": "This Agreement shall be governed and construed in accordance with the laws of the state of Texas without giving effect to the conflict of law rules thereof."
+    },
+    {
+      "index": 25,
+      "clause_type": "Governing Law",
+      "cluster_id": 1,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (28 examples)",
+      "umap_x": 9.748533248901367,
+      "umap_y": 14.103175163269043,
+      "prediction": "rejection of a Modified Deliverable within such five-day period, the Modified Deliverable will be deemed accepted by Client. 3.6 DELIVERY OF SUBJECT PROGRAM AND DOCUMENTATION Upon completion of the Project, Developer will deliver to Client the Subject Program and Documentation in object code form co",
+      "reference": "This Agreement will be governed by the laws of the State of Washington without regards for its conflict of laws principle."
+    },
+    {
+      "index": 26,
+      "clause_type": "Governing Law",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 6.077824592590332,
+      "umap_y": 13.020764350891113,
+      "prediction": "assignment. 4. Inventions. Consultant acknowledges that Consultant's work in performing the Services is based on Consultant's own knowledge, skill, experience and ideas. Consultant acknowledges that Consultant has no right to any intellectual property rights in and to the Services or any inventions,",
+      "reference": "This Agreement shall be governed by the laws of the State of Texas, without reference to its conflicts of law principles."
+    },
+    {
+      "index": 27,
+      "clause_type": "Governing Law",
+      "cluster_id": 1,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (28 examples)",
+      "umap_x": 8.336898803710938,
+      "umap_y": 13.473090171813965,
+      "prediction": "ure Event\" shall have the meaning set forth in Section 6.1. 1.12 \"Governmental Authority\" shall mean any government, governmental agency, or instrumentality, domestic or foreign. 1.13 \"Gross Invoiced Sales\" shall mean the gross sales invoiced by the Party to the other Party for the Product during th",
+      "reference": "This Agreement shall be governed by and interpreted in accordance under the laws of the State of New York."
+    },
+    {
+      "index": 28,
+      "clause_type": "Governing Law",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 6.193986892700195,
+      "umap_y": 12.876604080200195,
+      "prediction": "state law to the appropriate authorities, including the Securities and Exchange Commission, the Department of Justice, or the Federal Trade Commission. 5. Intellectual Property Rights. (a) Ownership of all intellectual property rights in and to the Services and any and all results, data, information",
+      "reference": "This Agreement shall be construed and enforced in accordance with the laws of the State of California, without regard to the conflict of law principles of California or any other jurisdiction."
+    },
+    {
+      "index": 29,
+      "clause_type": "Governing Law",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 7.910242080688477,
+      "umap_y": 11.945508003234863,
+      "prediction": ", mobile applications, mobile content, mobile applications, mobile applications, mobile applications, mobile applications, mobile applications, mobile applications, mobile applications, mobile applications, mobile applications, mobile applications, mobile applications, mobile applications, mobile ap",
+      "reference": "This Agreement shall be governed by and construed in accordance with the internal laws of the State of Nevada without giving effect to any choice or conflict of law provision or rule."
+    },
+    {
+      "index": 30,
+      "clause_type": "Governing Law",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 6.405620098114014,
+      "umap_y": 14.949283599853516,
+      "prediction": "in NETTAXI's sole discretion. 2.3 SpinRecords.com Pages and NETTAXI Pages. SpinRecords.com and NETTAXI shall jointly jointly jointly jointly jointly jointly jointly jointly jointly jointly jointly jointly jointly jointly jointly jointly jointly jointly jointly jointly jointly jointly jointly jointly",
+      "reference": "This Agreement and any action"
+    },
+    {
+      "index": 31,
+      "clause_type": "Governing Law",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 6.721220016479492,
+      "umap_y": 14.968127250671387,
+      "prediction": "advantaged reorganization under Section 361 of the Internal Revenue Code of 1986, as amended, and that the undersigned has no right to rely upon any such treatment. (e) The undersigned acknowledges that the Merger is being made pursuant to the Agreement and that the undersigned has received and read",
+      "reference": "This Affiliate Agreement shall be governed by the laws of the State of Delaware."
+    },
+    {
+      "index": 32,
+      "clause_type": "Governing Law",
+      "cluster_id": 1,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (28 examples)",
+      "umap_x": 9.129192352294922,
+      "umap_y": 14.30792236328125,
+      "prediction": "for the performance of NCB's obligations under each Merchant Contract. NPC shall be responsible for the performance of NCB's obligations under each Merchant Contract in accordance with the terms of this Agreement. NPC shall be responsible for the performance of NCB's obligations under each Merchant ",
+      "reference": "This Agreement and its interpretation shall be governed by the laws of the United States and, to the extent not inconsistent therewith, by the laws of the Commonwealth of Kentucky without regard to conflicts of laws rules."
+    },
+    {
+      "index": 33,
+      "clause_type": "Anti-Assignment",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 7.0480732917785645,
+      "umap_y": 11.707353591918945,
+      "prediction": "defined in Section 4.1(ii) hereof. 1.16 \"HSWI Modifications\" means any modifications to the Content provided by HSWI. 1.17 \"HSWI Network\" means the HSWI-branded websites and any other web sites owned or operated by HSWI. 1.18 \"HSWI Sites\" means the HSWI-branded websites and any other web sites owned",
+      "reference": "Notwithstanding the foregoing, attached as Attachment C is a list of companies (the \"Competitors\") to whom assignment of this Agreement outside of an Acquisition may be made only with prior written consent of the other party, which the other party may withhold at its sole discretion."
+    },
+    {
+      "index": 34,
+      "clause_type": "Anti-Assignment",
+      "cluster_id": 1,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (28 examples)",
+      "umap_x": 9.276677131652832,
+      "umap_y": 13.45218563079834,
+      "prediction": "ER OR SUBCONTRACTOR, SHALL BE CONSIDERED AS PART OF THIS AGREEMENT. This Agreement, as it is modified by the terms of each order accepted by Subcontractor, shall constitute the entire agreement between the Parties and shall supersede all prior or contemporaneous agreements, whether oral or written, ",
+      "reference": "Any assignment made by either Party in contravention of this Section 15.7 shall be null and void for all purposes."
+    },
+    {
+      "index": 35,
+      "clause_type": "Anti-Assignment",
+      "cluster_id": 1,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (28 examples)",
+      "umap_x": 8.903101921081543,
+      "umap_y": 15.754864692687988,
+      "prediction": "until the effective date of termination. (b) Customer may terminate this Agreement without penalty if Customer terminates its relationship with Google Ad Manager. In the event of termination of this Agreement for any reason other than material breach by Kubient, Kubient shall be entitled to all fees",
+      "reference": "Customer will not modify, translate, alter, tamper with, repair, or otherwise create derivative works of any software included in any Service; reverse engineer, disassemble, or decompile any software or Service or apply any other process or procedure to derive source code of any software included in"
+    },
+    {
+      "index": 36,
+      "clause_type": "Anti-Assignment",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 9.85344123840332,
+      "umap_y": 13.81013298034668,
+      "prediction": "the right to request the Contractor to purchase LLI's from other vendors. 6.4 Material Cost Price The material cost price shall be determined by the Contractor and shall be based on the cost price of the material at the time of purchase. 6.5 Material Cost Price changes The material cost price change",
+      "reference": "Neither Party shall have the right to assign or otherwise transfer its rights or obligations under this Agreement except with the prior written consent of the other Party, not to be unreasonably withheld or delayed."
+    },
+    {
+      "index": 37,
+      "clause_type": "Anti-Assignment",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 5.425008773803711,
+      "umap_y": 13.806255340576172,
+      "prediction": "Party (as defined herein). NOW, THEREFORE, in consideration of the foregoing and the mutual covenants and agreements contained herein, the Parties, intending to be legally bound, agree as follows: ARTICLE I DEFINITIONS 1.1 Defined Terms. For purposes hereof, the following terms shall have the respec",
+      "reference": "delegate any or all of its obligations under this Agreement without the express prior written consent of the other Parties, except as follows"
+    },
+    {
+      "index": 38,
+      "clause_type": "Anti-Assignment",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 9.740251541137695,
+      "umap_y": 13.608182907104492,
+      "prediction": "the existing order backlog will be invoiced at the higher price. 6.4 Tripath reserves the right to allow for credits, returns, and other adjustments to the price of Products, in its sole discretion, without prior notice. 6.5 Tripath may, in its sole discretion, allow for credits, returns, and other ",
+      "reference": "This Agreement is not assignable by Distributor without prior written consent of Tripath, which will not be unreasonably withheld."
+    },
+    {
+      "index": 39,
+      "clause_type": "Anti-Assignment",
+      "cluster_id": 1,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (28 examples)",
+      "umap_x": 8.961071014404297,
+      "umap_y": 14.618340492248535,
+      "prediction": "the Smaaash Centres shall be mutually agreed between the Franchisor and the Franchisee. (c) Franchisor shall be responsible for the development of the products and services offered in the Smaaash Centres. (d) Franchisor shall be responsible for the development of the technology required for the Smaa",
+      "reference": "The Franchisee shall not be entitled to assign, transfer, encumber or dispose of any of its rights and or obligations under this Agreement, including to an affiliate, without the prior written consent of the Franchisor."
+    },
+    {
+      "index": 40,
+      "clause_type": "Anti-Assignment",
+      "cluster_id": 1,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (28 examples)",
+      "umap_x": 9.4065523147583,
+      "umap_y": 15.429167747497559,
+      "prediction": ". B. MKOS shall pay UTEK the first $10,000 within 30 days of the execution of this Agreement. C. MKOS shall pay UTEK the balance of the $120,000 in monthly installments of $10,000, with the balance due within 30 days of the execution of this Agreement. V. TERM This Agreement shall commence on the da",
+      "reference": "The benefits of the Agreement shall inure to the respective successors and assignees of the parties and assigns and representatives, and the obligations and liabilities assumed in this Agreement by the parties hereto shall be binding upon their respective successors and assigns; provided that the ri"
+    },
+    {
+      "index": 41,
+      "clause_type": "Anti-Assignment",
+      "cluster_id": 1,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (28 examples)",
+      "umap_x": 8.771612167358398,
+      "umap_y": 13.206769943237305,
+      "prediction": ".12 \"Annual Plan\" means the plan for the promotion and marketing of the Product for each of the Agreement Quarters, which will be developed by Depomed and King in accordance with Section 4.1, which will be signed by both parties, and which will be subject to the approval of the other party. Section ",
+      "reference": "Any attempted assignment without consent shall be void."
+    },
+    {
+      "index": 42,
+      "clause_type": "Anti-Assignment",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 6.61052942276001,
+      "umap_y": 14.038222312927246,
+      "prediction": "to use the Celebrity Endorsement in connection with the advertising, promotion and sale of Products. B. ABG shall have the right to approve or disapprove any and all advertising, promotions, and other uses of the Celebrity Endorsement. ABG shall notify PAPA JOHN'S of its approval or disapproval of a",
+      "reference": "In the event PAPA JOHN'S wishes to sub-contract any or all of the operation of the Products or its related business hereunder (e.g., design of the Products, advertising of the Products, creation of Products, etc.) to any third party (e.g., ad agencies, photographers, videographers, producers, crew, "
+    },
+    {
+      "index": 43,
+      "clause_type": "Anti-Assignment",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 5.639492034912109,
+      "umap_y": 14.150684356689453,
+      "prediction": "a Product in the United States, or (b) a Marketing Authorization Application filed with the MHLW for marketing a Product in South Korea. 1.7 \"Change of Control\" means any transaction or series of transactions that results in (i) the consolidation or merger of the Party being changed into a subsidiar",
+      "reference": "Neither Party may assign its rights and obligations under this Agreement without the prior written consent of the other Party, provided that either Party may assign its rights and obligations under this Agreement, without such consent from the other Party, to its Affiliate or any successor in intere"
+    },
+    {
+      "index": 44,
+      "clause_type": "Anti-Assignment",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 6.916842937469482,
+      "umap_y": 14.944047927856445,
+      "prediction": "'Anti-Assignment' clause.\n\nContract excerpt:\nExhibit 99.01 JOINT VENTURE AGREEMENT THIS JOINT VENTURE AGREEMENT (the \"Agreement\") made and entered into this 27th day of November 2018 (the \"Execution Date\"), BETWEEN: MJ Syndicated, Inc. a Florida Corporation of _______________________________, FL 334",
+      "reference": "Title to all Joint Venture Property will remain in the name of the Joint Venture."
+    },
+    {
+      "index": 45,
+      "clause_type": "Anti-Assignment",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 8.947575569152832,
+      "umap_y": 15.193610191345215,
+      "prediction": "URE's standard operating procedures and specifications, as amended from time to time, and to use Your best efforts to promote and enhance the performance and operation of the Franchise. D. AIRSOPURE reserves the right to terminate this Agreement or any renewal term hereof if You fail to comply with ",
+      "reference": "Any purported assignment or transfer, by operation of law or otherwise, not having the prior written consent of AIRSOPURE shall be null and void and shall constitute a material breach of this Agreement."
+    },
+    {
+      "index": 46,
+      "clause_type": "Anti-Assignment",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 7.851069450378418,
+      "umap_y": 14.232465744018555,
+      "prediction": "(b) the 640-acre Moore Sams Field 18,100' TUSC RA SWD, (c) the 640-acre Moore Sams Field 18,100' TUSC RA SE, (d) the 640-acre Moore Sams Field 18,100' TUSC RA SEW, (e) the 640-acre Moore Sams Field 18,100' TUSC RA NE, (f) the 640-acre Moore Sams Field 18,100' TUSC RA NW, (g) the 640-acre Moore Sams ",
+      "reference": "Any assignment of the rights and obligations under this Agreement by Company without the consent of BP shall be voidable by BP."
+    },
+    {
+      "index": 47,
+      "clause_type": "Anti-Assignment",
+      "cluster_id": 1,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (28 examples)",
+      "umap_x": 7.86488151550293,
+      "umap_y": 11.318642616271973,
+      "prediction": "to be performed by VNE, as described in Section 2.1 below. 1.19 \"SOW\" means the Statement of Work for the Professional Services described in Section 2.1 below. 1.20 \"Severity Level\" means the severity level of a Problem as defined in Exhibit A hereto. 1.21 \"Software\" means the software products lice",
+      "reference": "Otherwise, neither party may assign this Agreement without the other party's prior written consent (not to be unreasonably withheld)."
+    },
+    {
+      "index": 48,
+      "clause_type": "Anti-Assignment",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 6.970405101776123,
+      "umap_y": 15.201436042785645,
+      "prediction": "40 Section 9.8 No Obligation to Participate in Any Proceeding 40 Section 9.9 No Waiver 40 Section 9.10 Notices 40 Section 9.11 Survival 40 Section 9.12 Counterparts 40 Section 9.13 Third Party Beneficiaries 40 Section 9.14 Entire Agreement 40 Section 9.15 Severability 40 Section 9.16 Dispute Resolut",
+      "reference": "Except as stated in Sections 5.3, 7.4 and 7.6, this Agreement may not be assigned by the Depositor or the Servicer without the consent of the Owner Trustee, the Indenture Trustee, the Certificateholders and the Noteholders of at least 66-2/3% of the Note Balance of the Controlling Class."
+    },
+    {
+      "index": 49,
+      "clause_type": "Anti-Assignment",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 6.4580841064453125,
+      "umap_y": 13.153901100158691,
+      "prediction": "officers, directors, employees, agents and affiliates from and against any and all claims, liabilities, losses, costs, damages, expenses, including attorney's fees, arising out of any third party claim that the Products infringe any U.S. or foreign patent or trade secret rights. 4.02 Trademark Infri",
+      "reference": "Distributor shall not assign the rights granted in this Section 1.01 without the prior written consent of the Company."
+    },
+    {
+      "index": 50,
+      "clause_type": "Anti-Assignment",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 8.419881820678711,
+      "umap_y": 12.946379661560059,
+      "prediction": "respect to any particular Production installation or group Product installation may be negotiated by Hydraspin and the Distributor and set forth in a separate written agreement between the Parties, and in such case, the Hydraspin Share set forth in the separate written agreement shall supersede and ",
+      "reference": "Any attempted assignment without such consent shall be void and of no effect."
+    },
+    {
+      "index": 51,
+      "clause_type": "Anti-Assignment",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 7.5503249168396,
+      "umap_y": 14.650847434997559,
+      "prediction": "any stock option plans) currently and hereafter adopted by the Company. The Consultant will be entitled to receive any cash or stock payments made pursuant to any such plans. (e) The Consultant will be entitled to receive any cash or stock payments made pursuant to any such plans. (f) The Consultant",
+      "reference": "Except as herein expressly provided, the respective rights and obligations of the Consultant and the Company under this Agreement will not be assignable by either party without the written consent of the other party and will, subject to the foregoing, inure to the benefit of and be binding upon the "
+    },
+    {
+      "index": 52,
+      "clause_type": "Anti-Assignment",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 6.862253665924072,
+      "umap_y": 13.956809997558594,
+      "prediction": "RA Rule 2270 and SEC Rule 17b-2, respectively; and (iii) Distributor's current policies and procedures. (iii) Distributor agrees to provide S2K with access to Distributor's AdLit system for the purpose of reviewing and approving marketing pieces. (c) The Distributor shall provide S2K with the follow",
+      "reference": "No party to this Agreement has the right to assign any of its rights or obligations hereunder, except as already set forth under this Agreement."
+    },
+    {
+      "index": 53,
+      "clause_type": "Anti-Assignment",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 9.280072212219238,
+      "umap_y": 13.672296524047852,
+      "prediction": "out in Schedule \"A\" attached hereto, which service standards may be amended from time to time; v) In providing such sameday services, agrees to provide customer service, dispatch, pickup and delivery, tracing and tracking, together with joint sales and marketing efforts with Purolator, and will invo",
+      "reference": "Neither Party shall sell, assign, subcontract, transfer or dispose of         this Agreement or any part thereof, without the prior written consent of         the other Party or otherwise enter into an agreement with any other         Party for Services contemplated herein."
+    },
+    {
+      "index": 54,
+      "clause_type": "Anti-Assignment",
+      "cluster_id": 1,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (28 examples)",
+      "umap_x": 8.633469581604004,
+      "umap_y": 13.912875175476074,
+      "prediction": "time. \"Agreement\" means this Supply Agreement and all Exhibits attached hereto, including any supplements or amendments attached hereto. \"Alliance Manager\" means the person appointed by each Party from time to time to act as the primary contact between the Parties with respect to the activities cont",
+      "reference": "Any assignment of this Agreement in contravention of this Article 17 shall be null and void."
+    },
+    {
+      "index": 55,
+      "clause_type": "Anti-Assignment",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 5.65872859954834,
+      "umap_y": 13.227409362792969,
+      "prediction": ", including reasonable attorneys' fees and disbursements, that the other Party to this Agreement may have against the other Party to this Agreement or any of its Affiliates, or any third party, arising out of or in connection with this Agreement. 1.8 \"Confidential Information\" of a Party shall mean ",
+      "reference": "Notwithstanding the aforesaid, either Party shall be entitled to assign, delegate, and/or subcontract its rights and obligation under this Agreement, in whole or in part, to one or more of its Affiliates on prior written notice to the other Party."
+    },
+    {
+      "index": 56,
+      "clause_type": "Anti-Assignment",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 6.5391764640808105,
+      "umap_y": 12.593427658081055,
+      "prediction": "7 \"Energous Patents\" means all patents, patent applications, patent-related intellectual property, trademarks, trade names, copyrights, trade secrets, know-how, and other intellectual property rights and related trademarks, trade dress, service marks, domain names, and other intellectual property ri",
+      "reference": "This Agreement may not be assigned by either party without the express written consent of the other party, which approval will not be unreasonably withheld or delayed, except that either party may (without consent but with notice to the other party) assign this Agreement in its entirety to any succe"
+    },
+    {
+      "index": 57,
+      "clause_type": "Anti-Assignment",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 7.937861442565918,
+      "umap_y": 12.496946334838867,
+      "prediction": "4.1. 1.1.11 \"Asian Clinical Trial\" has the meaning ascribed to such term in Section 3.1. 1.1.12 \"Asian Clinical Trial Country\" has the meaning ascribed to such term in Section 3.1. 1.1.13 \"Asian Clinical Trial Site\" has the meaning ascribed to such term in Section 3.1. 1.1.14 \"Asian Clinical Trial S",
+      "reference": "Without the prior written consent of the other Party hereto, neither Party will sell, transfer, assign, pledge or otherwise dispose of, whether voluntarily, involuntarily, by operation of law or otherwise, this Agreement or any of its rights or duties hereunder; provided, however, that either Party "
+    },
+    {
+      "index": 58,
+      "clause_type": "Anti-Assignment",
+      "cluster_id": 1,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (28 examples)",
+      "umap_x": 8.885260581970215,
+      "umap_y": 15.672927856445312,
+      "prediction": "others to use, or otherwise utilizing the Professional's name and endorsement in connection with any other business, venture, or other opportunity. 6. TERM. The term of this Agreement shall be for a period of three (3) years commencing on the date of this Agreement. 7. TERMINATION OF AGREEMENT. This",
+      "reference": "This Agreement may not be assigned by the           Professional under any circumstances."
+    },
+    {
+      "index": 59,
+      "clause_type": "Anti-Assignment",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 8.655902862548828,
+      "umap_y": 11.740129470825195,
+      "prediction": "parts. 4 2.9 Hearing Aids: 2.10 Professional Audio/Communication Devices: 2.11 ON Semiconductor: 2.12 Ezairo: 2.13 SCHA: 2.14 ULP: 2.15 ULP Wireless: 2.16 Hearing Care Software: 2.17 Hearing Care Software System: 2.18 Hearing Care Software System Components: 2.19 Hearing Care Software System Compone",
+      "reference": "Likewise, Dynamic Hearing may not assign or transfer any of its rights or obligations under this Agreement without the prior  written consent of IntriCon."
+    },
+    {
+      "index": 60,
+      "clause_type": "Anti-Assignment",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 7.551677227020264,
+      "umap_y": 13.920228958129883,
+      "prediction": "the right to license the Title to Licensee for the Term in China only, and Licensee may not distribute the Title outside of China. 2) For Titles listed in Schedule A3-A4: Licensor can only grant Licensee the right to license the Title to Licensee for the Term in the Territory, and Licensee may distr",
+      "reference": "Licensee shall have the right to assign or sublicense any or all of its rights granted under this Agreement, in whole or in part, to third parties exhibiting the Titles in the ordinary course of Licensee's business with prior written notice to Licensor and subject to the applicable limitations (if a"
+    },
+    {
+      "index": 61,
+      "clause_type": "Anti-Assignment",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 9.083614349365234,
+      "umap_y": 12.775249481201172,
+      "prediction": "the Reseller with a comprehensive sales and marketing manual, which shall include, but not be limited to, the following: (a) a detailed description of the Products, including their use, benefits, and indications; (b) a detailed description of the Products' performance characteristics, including thei",
+      "reference": "This Agreement and the rights granted hereunder shall not be assigned, encumbered by security interest or otherwise transferred by the Reseller without the prior written consent of Todos, except for the assignment or transfer of rights to a subsidiary company or an affiliated company."
+    },
+    {
+      "index": 62,
+      "clause_type": "Anti-Assignment",
+      "cluster_id": 1,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (28 examples)",
+      "umap_x": 8.557581901550293,
+      "umap_y": 13.95589542388916,
+      "prediction": ". Source: PENNTEX MIDSTREAM PARTNERS, LP, S-1/A, 4/16/2015 \"Customer's Firm Service Commitment\" shall have the meaning given to such term in Article IV. \"Customer's Maximum Service Commitment\" shall have the meaning given to such term in Article IV. \"Customer's Maximum Service Commitment Period\" sha",
+      "reference": "This Agreement may not be assigned, disposed of, alienated or otherwise transferred by either Party, in whole or in part, without the prior written consent of the other Party, which consent shall not be unreasonably withheld, conditioned or delayed, except as provided below."
+    },
+    {
+      "index": 63,
+      "clause_type": "Change Of Control",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 5.450011253356934,
+      "umap_y": 13.749975204467773,
+      "prediction": "by the receiving Party; (iii) that is or was obtained by the receiving Party through a lawfully acquired means, including, without limitation, by means of a review of publicly available information; (iv) that is disclosed by the other Party (i) as part of a public filing or disclosure, including, wi",
+      "reference": "Subject to the terms and conditions of this Agreement commencing as of the Effective Date and for the duration of the Term and any Transition-out Period, Ehave hereby grants to CHT a non-transferable (except as permitted under Section 20(f)), right to: (i) sub-license the use of the Ehave Companion "
+    },
+    {
+      "index": 64,
+      "clause_type": "Change Of Control",
+      "cluster_id": 1,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (28 examples)",
+      "umap_x": 9.341609001159668,
+      "umap_y": 14.311864852905273,
+      "prediction": "agreed upon by both parties. Once a mutually agreed upon SOW is signed by both parties, the SOW shall govern the development of the Information Transfer Mechanism. 2.3 DEVELOPMENT. (a) 2TheMart shall be responsible for all development, hosting and other costs associated with the pages resident on th",
+      "reference": "If a majority of the equity securities of either 2TheMart or i-Escrow, Inc. (except that i-Escrow may sell all or a majority of its equity securities or voting interests to i-Escrow.com, and i-Escrow.com may sell all or a majority of its equity securities or voting interests to i-Escrow's existing s"
+    },
+    {
+      "index": 65,
+      "clause_type": "Change Of Control",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 5.9781270027160645,
+      "umap_y": 14.508556365966797,
+      "prediction": "isha organized under the laws of Japan, Fujitsu Semiconductor Limited (\"FSL\"), a kabushiki kaisha organized under the laws of Japan, Transphorm, Inc. (\"TPH\"), a corporation organized under the laws of Delaware, and Transphorm, Inc. (\"TPH-A\"), a corporation organized under the laws of Delaware (each ",
+      "reference": "(v) By FSL/AFSL and TPH/TPH-A, if there is a change in the Control of the other and the acquiring/succeeding entity causing such change in the Control is an entity that may be reasonably believed to be objectionable to the Japanese Government and/or FSL including FSL's Affiliates in case of the term"
+    },
+    {
+      "index": 66,
+      "clause_type": "Change Of Control",
+      "cluster_id": 1,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (28 examples)",
+      "umap_x": 8.819239616394043,
+      "umap_y": 14.660370826721191,
+      "prediction": "ER OR SUBCONTRACTOR, SHALL BE CONSIDERED AS PART OF THIS AGREEMENT. This Agreement, as it is modified by the terms of each order accepted by Subcontractor, shall constitute the entire agreement between the Parties with respect to the subject matter of such order and shall supersede all prior or cont",
+      "reference": "A Change of Control shall occur with respect to the Manufacturer, unless Subcontractor shall have expressly consented to such Change of Control in writing."
+    },
+    {
+      "index": 67,
+      "clause_type": "Change Of Control",
+      "cluster_id": 1,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (28 examples)",
+      "umap_x": 8.30836296081543,
+      "umap_y": 11.478633880615234,
+      "prediction": "to be performed by Vert, as described in Section 2.1 below. 1.19 \"SOW\" means the Statement of Work described in Section 2.1 below. 1.20 \"Severity Level\" means the severity level of a Problem as defined in Exhibit A hereto. 1.21 \"Software\" means the software products licensed to Converge from Vert as",
+      "reference": "No transfer of this Agreement by operation of law or change in Control of a party, including, without limitation, by merger, consolidation or sale or other transfer of equity interests, shall be considered an assignment for purposes of this Section 11.9."
+    },
+    {
+      "index": 68,
+      "clause_type": "Change Of Control",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 6.718693256378174,
+      "umap_y": 13.928695678710938,
+      "prediction": "Language 14.15 Bankruptcy 14.16 Counterparts US-DOCS\\105216871.19 Source: ZOGENIX, INC., 10-Q, 5/9/2019 Exhibit 10.2 CERTAIN INFORMATION (INDICATED BY ASTERISKS) HAS BEEN OMITTED FROM THIS DOCUMENT BECAUSE IT IS NOT MATERIAL AND WOULD LIKELY CAUSE COMPETITIVE HARM TO THE REGISTRANT IF PUBLICLY DISCL",
+      "reference": "Except as expressly provided in this Section 14.3, neither this Agreement nor any rights or obligations hereunder may be assigned or otherwise transferred by either Party without the prior written consent of the other Party, which consent shall not be unreasonably withheld; provided, however, that e"
+    },
+    {
+      "index": 69,
+      "clause_type": "Change Of Control",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 7.033175468444824,
+      "umap_y": 13.447606086730957,
+      "prediction": "and comprising representatives of Leclanch\u00e9 and Oak Ridge. The team shall assess the market opportunities in the United States and develop a plan for the marketing and sales of Leclanch\u00e9's products and services in the United States. Oak Ridge shall provide the necessary resources to support the team",
+      "reference": "Subject to Article 22.2, this Agreement shall remain in force for an Initial Period of 1 year, which may be renewed by mutual consent for such period as the Parties may agree (\"Term\"), unless it is terminated earlier in accordance with this Agreement or for any of the following reasons:"
+    },
+    {
+      "index": 70,
+      "clause_type": "Change Of Control",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 7.181275844573975,
+      "umap_y": 13.719189643859863,
+      "prediction": "Generation 2 Technology with Authorized Third Parties for Carbon Capture Applications, subject to the terms and conditions set forth in this Agreement. 2.04 Work. \"Work\" means the activities, deliverables, and results of the Project, including any and all intellectual property rights in and to such ",
+      "reference": "Subject to requirements of applicable law, FCE will provide notice to ExxonMobil prior to, or promptly after, it becomes aware of any such Change in Control, and if prior notice is prohibited by applicable Law, as soon as practicable or after such notice is no longer prohibited, but in no event late"
+    },
+    {
+      "index": 71,
+      "clause_type": "Change Of Control",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 7.8638997077941895,
+      "umap_y": 11.693359375,
+      "prediction": "below) to the Software. 1.11 \"SOFTWARE MARKETPLACE\" means the web-based site on the Internet at http://www.marketplace.com/ where the Software and MarketSite.net Service are made available for download by Customers. 1.12 \"SOFTWARE USER GUIDE\" means the on-line help files and written instruction manu",
+      "reference": "Notwithstanding the         foregoing, either party shall have the right to assign this Agreement in         connection with the merger or acquisition of such party or the sale of         all or substantially all of its assets related to this Agreement without         such consent, except in the cas"
+    },
+    {
+      "index": 72,
+      "clause_type": "Change Of Control",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 8.547765731811523,
+      "umap_y": 14.261155128479004,
+      "prediction": "and among Europe and North America; and WHEREAS, the Parties desire to allocate the TAT-14 to the Parties and to provide for the construction and maintenance of the TAT-14; and WHEREAS, the Parties desire to allocate the TAT-14 to the Parties and to provide for the construction and maintenance of th",
+      "reference": "A Party may assign the whole of its rights  under this  Agreement  to a          successor  by  law,  Subsidiary  or  Affiliate  of  such  Party,  or  a          corporation or an entity  jointly  controlling or under the same common          control as such Party,  provided that the assigning  Part"
+    },
+    {
+      "index": 73,
+      "clause_type": "Audit Rights",
+      "cluster_id": 1,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (28 examples)",
+      "umap_x": 8.526318550109863,
+      "umap_y": 15.40271282196045,
+      "prediction": ") any other services or products offered by Rogers. (b) License Fees shall be payable by Rogers to Licensor within thirty (30) days of the end of each quarter during the Term. (c) Rogers shall be entitled to credit for any and all Retail Revenues actually received by Rogers for each Licensed Program",
+      "reference": "During the Term, and for a period of twelve (12) months thereafter, Rogers (and its representatives) shall have the right, upon reasonable prior written notice to Licensor, and during regular business hours, to inspect and/or audit Licensor's books and records to confirm compliance with Licensor's o"
+    },
+    {
+      "index": 74,
+      "clause_type": "Audit Rights",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 9.503931045532227,
+      "umap_y": 13.171980857849121,
+      "prediction": "requirements of this contract. 3. COMPENSATION: 3.1 Commission. Company will pay Distributor a commission of 10% of the gross sales of the Products in the Territory. Distributor will be responsible for collecting sales tax from Customers and remitting it to the appropriate state authorities. Distrib",
+      "reference": "These records shall be available for examination during normal business hours by accountants representing the other Party, who shall be entitled to perform an audit and to make copies and extracts, and receive any explanations that may reasonably be requested."
+    },
+    {
+      "index": 75,
+      "clause_type": "Audit Rights",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 9.4522066116333,
+      "umap_y": 12.544137001037598,
+      "prediction": "right and license to use the EMV firmware in the Territory solely for the purpose of manufacturing the Products to fulfill Purchase Orders for EMV. 3. MANUFACTURING PROCESS 3.1 EMV Manufacturing Process. EMV will provide Manufacturer with the EMV Manufacturing Process, which includes the EMV's stand",
+      "reference": "Manufacturer's manufacturing records shall be available to EMV during spot checks and site inspections pursuant to Section 2.4, and upon request to allow EMV to provide such information to certification authorities as may be required."
+    },
+    {
+      "index": 76,
+      "clause_type": "Audit Rights",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 8.90246295928955,
+      "umap_y": 14.086379051208496,
+      "prediction": "1.4 The Parties agree that the Parties will use their best efforts to ensure that the RESEARCH PROJECTS are conducted in accordance with the principles of good agricultural and research practice. 1.5 The Parties agree that the Parties will use their best efforts to ensure that the RESEARCH PROJECTS ",
+      "reference": "PROJECT."
+    },
+    {
+      "index": 77,
+      "clause_type": "Audit Rights",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 6.8909993171691895,
+      "umap_y": 14.434215545654297,
+      "prediction": "conditions of this Agreement, JHU hereby grants to Company, for the term of this Agreement, a non-exclusive, non- transferable, non-sublicensable license to use, make, have made, offer to sell, sell, import and commercially exploit the invention in the LICENSED FIELD. 3.2 License Territory: The lice",
+      "reference": "JHU shall have the right to audit any and all Company records related to this Agreement."
+    },
+    {
+      "index": 78,
+      "clause_type": "Audit Rights",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 6.609206199645996,
+      "umap_y": 13.706548690795898,
+      "prediction": "limited to, television, radio, print, direct mail, point of purchase, and on line. North hereby grants to Company the right and privilege to use the Endorsed Product(s) during the Term and within the Contract Territory. North shall not use the Endorsed Product(s) for any purpose other than the adver",
+      "reference": "Company shall make said books available to North or North's representative on reasonable notice during  the Term of this Agreement and the two (2) year period immediately following thereafter."
+    },
+    {
+      "index": 79,
+      "clause_type": "Audit Rights",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 7.18578577041626,
+      "umap_y": 13.979454040527344,
+      "prediction": "to use the PSM in any other form or medium, including, without limitation, television, radio, print, or other forms of media. Licensee shall not use the PSM in any manner which would be inconsistent with the foregoing. Licensee shall not use the PSM in any manner which would be inconsistent with the",
+      "reference": "On reasonable notice, each party shall have the right to examine said books and records; provided that such examination will be made no more than twice in any given twelve month period, and shall be made during normal business hours."
+    },
+    {
+      "index": 80,
+      "clause_type": "Audit Rights",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 9.834670066833496,
+      "umap_y": 13.686553955078125,
+      "prediction": "existing order backlog will be invoiced at the higher price. 6.4 Tripath reserves the right to allow for credits, returns, and other adjustments to the price of Products, in its sole discretion, without prior notice. 6.5 Tripath may, in its sole discretion, allow for credits, returns, and other adju",
+      "reference": "Tripath may have an authorized Tripath representative, at Tripath's cost, audit Distributor's records relating to sales and inventories of Products, including, without limitation, records pertaining to any claims submitted by Distributor for price protection, stock rotation, returned Products, ship "
+    },
+    {
+      "index": 81,
+      "clause_type": "Audit Rights",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 7.273050785064697,
+      "umap_y": 12.893290519714355,
+      "prediction": "Village shall provide FMM with the opportunity to promote its automotive products through the Bridge Site. FMM shall have the right to promote its automotive products through the Bridge Site in a variety of ways, including, but not limited to, banner ads, links, and other promotional materials. C. D",
+      "reference": "During the Promotion Period, iVillage traffic shall be          audited by a third party traffic auditor listed on Exhibit A and          iVillage shall provide FMM with relevant reports on a biweekly basis."
+    },
+    {
+      "index": 82,
+      "clause_type": "Audit Rights",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 5.800042152404785,
+      "umap_y": 12.515876770019531,
+      "prediction": "\" means, subject to the provisions of Section 9.2 of this Agreement, all information disclosed by one Party to the other Party, including but not limited to information in written, graphic, machine readable or other tangible form, and oral information, in any case including, but not limited to, the ",
+      "reference": "Each Party shall permit an independent certified public accounting firm selected by the auditing Party and reasonably acceptable to the non-auditing Party, that has agreed to be bound by a confidentiality agreement reasonably acceptable to the Parties, to have access, during normal business hours an"
+    },
+    {
+      "index": 83,
+      "clause_type": "Audit Rights",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 6.245523452758789,
+      "umap_y": 13.763283729553223,
+      "prediction": "discretion. (d) Producer grants to ConvergTV the right and license to use the Producer's name, likeness, and/or other identifying information in connection with the distribution of the Program, including in connection with any promotional materials, advertising, publicity, and other promotional mate",
+      "reference": "Each of the Parties may, at its own expense, audit the other Party's compliance with this Agreement, including but not limited to, auditing the other Party's representations and warranties."
+    },
+    {
+      "index": 84,
+      "clause_type": "Audit Rights",
+      "cluster_id": 1,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (28 examples)",
+      "umap_x": 8.531041145324707,
+      "umap_y": 13.782336235046387,
+      "prediction": ". \"Agreement\" means this Supply Agreement and all Exhibits attached hereto, including any supplements or amendments thereto. \"Alliance Manager\" means the person appointed by each Party from time to time to act as the primary contact between the Parties with respect to the activities of the other Par",
+      "reference": "Upon commercially reasonable notice (to be provided not less than [...***...] days in advance) and during Miltenyi's normal business hours, but not more often than once every [...***...] months, except for cause, during the Term of this Agreement, Bellicum or Bellicum's Licensees duly authorized age"
+    },
+    {
+      "index": 85,
+      "clause_type": "Audit Rights",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 7.113987922668457,
+      "umap_y": 11.830558776855469,
+      "prediction": "of its obligations to MLX and HCI under this Agreement. 3. HCI'S OBLIGATIONS AND RESPONSIBILITIES a) HCI shall: b) continue to technically host and moderate all of the HealthyWay discussion forums currently residing on the forums section of the HCI Site. HCI shall retain all right, title to and inte",
+      "reference": "Either Party shall have the      right from time to time to audit and make extracts of the books and records      of the other, insofar as said books or records pertain to the terms of this      Agreement."
+    },
+    {
+      "index": 86,
+      "clause_type": "Audit Rights",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 5.130725860595703,
+      "umap_y": 13.61735725402832,
+      "prediction": "the Parties. 1.6 \"Force Majeure Event\" means any event or circumstance that is beyond the reasonable control of either Party, including, without limitation, any strike, lockout, or other labor dispute; any act of God, including, without limitation, any flood, storm, fire, explosion, lightning, earth",
+      "reference": "During the Term and the [***] period thereafter, SutroVax or a SutroVax Affiliate may, during normal working hours and upon reasonable advance notice perform site audits and inspect, or request information relating to, Sutro's or its subcontractor's Facilities and records directly or indirectly invo"
+    },
+    {
+      "index": 87,
+      "clause_type": "Audit Rights",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 6.372925281524658,
+      "umap_y": 14.66650390625,
+      "prediction": "-chome, Chiyoda-ku, Tokyo 100-0008, Japan, and Moelis & Company Holdings LP, a Delaware limited partnership with its principal offices at 55 East 60th Street, New York, New York 10022 (\"Moelis\") and Moelis & Company Holdings GP LLC, a Delaware limited liability company with its principal offices at ",
+      "reference": "for the period beginning a reasonable time before the filing of the Registration Statement and for as long as Moelis Holdings is required to cause the Registration Statement to remain current under Section 13.1(a)(ii), and except to the extent prohibited by applicable law and subject to entering int"
+    },
+    {
+      "index": 88,
+      "clause_type": "Audit Rights",
+      "cluster_id": 1,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (28 examples)",
+      "umap_x": 8.180561065673828,
+      "umap_y": 13.899206161499023,
+      "prediction": "as of the Effective Date, between the Company and OHL. (u) \"Services\" shall have the meaning set forth in the Recitals to this Agreement. (v) \"Services Outsourcing Agreement\" shall have the meaning set forth in the Recitals to this Agreement. (w) \"Services Provider\" shall have the meaning set forth ",
+      "reference": "From time to time during the Term of this Agreement, upon reasonable advance notice, Contractor shall permit the Company and its agents, representatives, auditors and designees to visit, inspect and have full access, during normal business hours, to properties, assets, books, records, agreements, do"
+    },
+    {
+      "index": 89,
+      "clause_type": "Non-Compete",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 6.382823944091797,
+      "umap_y": 13.37615966796875,
+      "prediction": "utor shall not, and may not permit any other person, including customers, to use the Erchonia Trademarks in connection with the sale or distribution of the Products, except as expressly permitted under this Agreement. k. Distributor shall not, and may not permit any other person, including customers",
+      "reference": "During the term of this agreement, Distributor shall not market, sell advertise or promote the sale or use of any product or device which is competitive with or substantially similar to the Products, without the prior express written consent of Erchonia, nor shall they assist any third party in doin"
+    },
+    {
+      "index": 90,
+      "clause_type": "Non-Compete",
+      "cluster_id": 1,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (28 examples)",
+      "umap_x": 9.262760162353516,
+      "umap_y": 15.419180870056152,
+      "prediction": "term of this Agreement. B. MKOS shall pay UTEK the first $10,000 within 30 days of the execution of this Agreement. C. MKOS shall pay UTEK the balance of the $120,000 in monthly installments of $10,000 for the term of this Agreement. V. TERM This Agreement shall commence on the date hereof and shall",
+      "reference": "MKOS will not seek to acquire any technologies presented to MKOS by UTEK from the technology developer directly or indirectly for a period of 24 months following the termination of this Strategic Alliance Agreement."
+    },
+    {
+      "index": 91,
+      "clause_type": "Non-Compete",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 7.505431175231934,
+      "umap_y": 12.69025707244873,
+      "prediction": "in and to Intellectual Property, including, without limitation, all patents, trademarks, copyrights, trade secrets, trade dress, brand features, know-how and similar rights. 1.12 MARKS shall mean the trademarks and trade dress of VerticalNet and Neoforma, including any additions, modifications, impr",
+      "reference": "Neoforma shall not enter into, and shall cause its Affiliates to not enter into, any agreement with a third party for the on-line listing of Laboratory Products on a VerticalNet Competitor or place any Link to a VerticalNet Competitor on the Neoforma Sites."
+    },
+    {
+      "index": 92,
+      "clause_type": "Non-Compete",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 7.697895050048828,
+      "umap_y": 11.891243934631348,
+      "prediction": "and methods for developing, implementing and maintaining the SOFTWARE as defined in the DOCUMENTATION; 2. 3. 8. \"SOFTWARE\" means the computer programs and data in machine readable format in any medium that are delivered to TELKOM under this AGREEMENT, including the PROGRAM CONCEPTS; 2. 3. 9. \"MARKET",
+      "reference": "TELKOM shall not copy the source code, nor disclose it to any third party except   agents retained by TELKOM to assist in maintaining the SOFTWARE, provided   that no such agent is in the business of marketing or developing SOFTWARE   competitive with the SOFTWARE."
+    },
+    {
+      "index": 93,
+      "clause_type": "Non-Compete",
+      "cluster_id": 1,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (28 examples)",
+      "umap_x": 7.116176605224609,
+      "umap_y": 15.34868335723877,
+      "prediction": "ed 'Non-Compete' clause: None. The excerpt does not contain a 'Non-Compete' clause.",
+      "reference": "interest to the Joint Venture without the unanimous written consent of the remaining Participants."
+    },
+    {
+      "index": 94,
+      "clause_type": "Non-Compete",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 7.646308422088623,
+      "umap_y": 13.311033248901367,
+      "prediction": "\"Effective Date\"), is by and between JANSSEN BIOTECH, INC., a Delaware corporation (\"Janssen\"), and IMMUNOMEDICS, INC., a Pennsylvania corporation (\"Immunomedics\"). Immunomedics and Janssen are sometimes referred to herein individually as a \"Party\" and collectively as the \"Parties.\" RECITALS: A. Jan",
+      "reference": "During the Term, neither Company nor any of its Affiliates (including, for the avoidance of doubt, any Third Party that becomes an Affiliate of Company after the Effective Date) shall, alone or in collaboration with any Third Party, market, promote, sell, distribute or otherwise commercialize in the"
+    },
+    {
+      "index": 95,
+      "clause_type": "Non-Compete",
+      "cluster_id": 1,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (28 examples)",
+      "umap_x": 9.108964920043945,
+      "umap_y": 15.602055549621582,
+      "prediction": ") days written notice to the Company, terminate this Agreement if the Company fails to make any payment due hereunder within thirty (30) days of the date of such notice. 4. Term. The term of this Agreement shall be for a period of one (1) year from the date of this Agreement, unless terminated earli",
+      "reference": "During the term of this Agreement and for a period of two years after the expiration date of this Agreement, HDI shall not participate in any project similar to the Site on the Internet from which products substantially similar to Deerskin Products (including, without limitation, the products of Wil"
+    },
+    {
+      "index": 96,
+      "clause_type": "Non-Compete",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 6.551659107208252,
+      "umap_y": 13.09703254699707,
+      "prediction": "its officers, directors, employees, agents and affiliates from and against any and all claims, liabilities, losses, costs, damages, expenses, including attorney's fees, arising out of any third party claim that the Products infringe any U.S. or foreign patent or trade secret rights. 4.02 Trademark I",
+      "reference": "Distributor agrees not to represent or sell other products which are deemed to be competitive with the Company's Products unless agreed to by the Company by written notice."
+    },
+    {
+      "index": 97,
+      "clause_type": "Non-Compete",
+      "cluster_id": 1,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (28 examples)",
+      "umap_x": 8.751626014709473,
+      "umap_y": 15.807079315185547,
+      "prediction": "for services rendered. 3. Term. This Agreement shall commence on the Effective Date and shall continue for a period of one (1) year, unless terminated earlier in accordance with the terms of this Agreement. 4. Termination. Marketing Affiliate may terminate this Agreement at any time without penalty ",
+      "reference": "Further, Marketing  Affiliate shall not market similar products from competing companies on any Web Site Landing Page containing the Equidata or Marketing Affiliate Web link as long as this Agreement is in effect."
+    },
+    {
+      "index": 98,
+      "clause_type": "Termination For Convenience",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 6.698417663574219,
+      "umap_y": 13.195765495300293,
+      "prediction": "ity 29 12.1 Confidentiality 29 12.2 Publicity 29 12.3 Exceptions 29 12.4 Confidentiality of this Agreement 29 12.5 Confidentiality of Technical Information 29 12.6 Exceptions 29 12.7 Publicity of Customer 29 Article 13 Representations, Warranties and Covenants 30 13.1 Customer Representations, Warra",
+      "reference": "Customer shall have the right to terminate any Scope of Work and corresponding Purchase Order for Services at any time on reasonable advance written notice to Supplier (without terminating this Agreement), in which case Customer shall be responsible for:\n\n[* * *]"
+    },
+    {
+      "index": 99,
+      "clause_type": "Termination For Convenience",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 5.614811897277832,
+      "umap_y": 12.436253547668457,
+      "prediction": "idential Information\" means, subject to the provisions of Section 4.2 of this Agreement, all information disclosed by one Party to the other Party, including but not limited to information in written, graphic, machine readable or other tangible form, and oral information, in any case including, but ",
+      "reference": "ETON has the right to terminate this Agreement after approval of the Dossier or marketing application for the Product (or added new product), at its sole discretion, upon providing one hundred eighty (180) days' written notice to Aucta."
+    },
+    {
+      "index": 100,
+      "clause_type": "Termination For Convenience",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 7.43458890914917,
+      "umap_y": 12.250958442687988,
+      "prediction": "express written permission; (ii) which are not the product of Cisco; or (iii) which are not substantially equivalent to Cisco's products and services. Product is any and all Hardware and/or Software. Software is the computer programs and/or operating systems and/or firmware that Cisco makes availabl",
+      "reference": "Either party may terminate this Agreement, without cause, by giving the other party [*****] days prior written notice."
+    },
+    {
+      "index": 101,
+      "clause_type": "Termination For Convenience",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 10.062699317932129,
+      "umap_y": 13.47662353515625,
+      "prediction": "obligations, one to the other. 6. PRICES: The prices for the Products are as stated above. All prices are subject to a 1% monthly increase during the Renewal Period. 7. DELIVERY: Products will be delivered to COMWARE by ITS within 15 days of receipt of purchase order. 8. PAYMENT TERMS: Payment to IT",
+      "reference": "except as  specifically  described  elsewhere  in this  agreement,      either ITS or COMWARE shall have the right to terminate this Agreement with      30 days written notice from the other party, for any reason whatsoever."
+    },
+    {
+      "index": 102,
+      "clause_type": "Termination For Convenience",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 8.676695823669434,
+      "umap_y": 11.733534812927246,
+      "prediction": "components. 4 2.9 Hearing Aids: 2.10 Professional Audio/Communication Devices: 2.11 ON Semiconductor: 2.12 Ezairo: 2.13 SCHA: 2.14 ULP: 2.15 ULP Wireless: 2.16 Hearing Care Software: 2.17 Hearing Care Software System: 2.18 Hearing Care Software System Components: 2.19 Hearing Care Software System Co",
+      "reference": "Subject to the provisions of 11.1, Dynamic Hearing may terminate this Agreement upon three (3) months written notice  to IntriCon of such termination."
+    },
+    {
+      "index": 103,
+      "clause_type": "Termination For Convenience",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 7.837518215179443,
+      "umap_y": 15.10271167755127,
+      "prediction": ":00 a.m. Eastern Time on the Business Day next following the receipt of such order. The Trust shall not be obligated to purchase or redeem any shares of the Funds for any amount less than the net asset value of such shares on the Close of Trading. The Trust shall not be obligated to purchase or rede",
+      "reference": "This Agreement shall terminate (a) at the option of any party, upon 90 days' advance written notice to the other parties hereto;"
+    },
+    {
+      "index": 104,
+      "clause_type": "Termination For Convenience",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 9.55734920501709,
+      "umap_y": 12.988058090209961,
+      "prediction": "expense with all applicable federal, state and local laws, ordinances, regulations and rules. 3.6 Acceptance of Products. The Distributor shall accept Products from JRVS in good condition and in the quantity specified in JRVS's order. The Distributor shall promptly notify JRVS of any damage or loss ",
+      "reference": "This Agreement may be terminated by either party for any reason or no reason, whether or not extended beyond the initial term, by giving the other party written notice ninety (90) days in advance."
+    },
+    {
+      "index": 105,
+      "clause_type": "Termination For Convenience",
+      "cluster_id": 1,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (28 examples)",
+      "umap_x": 8.41434097290039,
+      "umap_y": 15.904296875,
+      "prediction": "ed 'Termination For Convenience' clause: None. The excerpt does not contain this clause. The excerpt appears to be a Joint Venture Agreement excerpt, which typically does not include a 'Termination For Convenience' clause. If you require a different excerpt, please provide the exact contract languag",
+      "reference": "Any Participant will have the right to voluntarily withdraw from the Joint Venture at any time"
+    },
+    {
+      "index": 106,
+      "clause_type": "Termination For Convenience",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 6.612718105316162,
+      "umap_y": 11.726539611816406,
+      "prediction": "assigned to a specific device. \"Material Breach\" means the material breach of any term of this Agreement by either party, which breach has not been cured or waived by the other party, and which has caused material and/or irreparable harm to the other party. \"Non-Disclosure Agreement\" means the Non-D",
+      "reference": "Customer may terminate this Agreement, or any portion of Services specified herein, for convenience by: providing at least sixty (60) days prior written notice to IBM; and paying the applicable early termination charges specified in Attachment C."
+    },
+    {
+      "index": 107,
+      "clause_type": "Termination For Convenience",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 8.501458168029785,
+      "umap_y": 12.791949272155762,
+      "prediction": "batch of Product. 1.8 \"Drug\" shall mean the active pharmaceutical ingredient for Magenta's clinical trial product, as defined in Appendix A. 1.9 \"Drug Master File\" shall mean the document containing the CMC information for the Drug, attached hereto as Appendix C. 1.10 \"Drug Master File Number\" shall",
+      "reference": "This Agreement or any Project Plan may be terminated:\n\n(a) by Magenta for any reason upon [***] written notice to Bachem;"
+    },
+    {
+      "index": 108,
+      "clause_type": "Termination For Convenience",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 7.581472873687744,
+      "umap_y": 14.700185775756836,
+      "prediction": ", any stock option plans) currently and hereafter adopted by the Company. The Consultant will be entitled to receive any cash or stock payments made pursuant to any such plans. (e) The Consultant will be entitled to receive any cash or stock payments made pursuant to any such plans. (f) The Consulta",
+      "reference": "The Consultant may voluntarily terminate the Consultant's engagement with the Company at any time by giving the Company 120 days prior written Notice of the termination."
+    },
+    {
+      "index": 109,
+      "clause_type": "IP Ownership Assignment",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 5.29127311706543,
+      "umap_y": 13.687466621398926,
+      "prediction": "Party (as defined herein). NOW, THEREFORE, in consideration of the foregoing and the mutual covenants and agreements contained herein, the Parties, intending to be legally bound, agree as follows: ARTICLE I DEFINITIONS 1.1 Defined Terms. For purposes hereof, the following terms shall have the respec",
+      "reference": "Subject to Section 3.2, each Assignor Party, on behalf of itself and the other members of the Assignor Group, hereby irrevocably assigns to the applicable Assignee Party, and agrees to irrevocably assign to the applicable Assignee Party, all of its and the other members of the Assignor Group's right"
+    },
+    {
+      "index": 110,
+      "clause_type": "IP Ownership Assignment",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 6.821599006652832,
+      "umap_y": 12.315308570861816,
+      "prediction": "Content Network. \"Digital Property\" has the meaning assigned to it in Section 12.2. \"Digital Property Rights\" means all rights in and to the Digital Property, including, without limitation, all intellectual property rights therein. \"Digital Property Ownership\" has the meaning assigned to it in Secti",
+      "reference": "Any and all data, information, and material created, conceived, reduced to practice, or developed by or on  behalf of either Party, whether alone, in connection with the other Party or any third party, including, without limitation, written works, processes,  methods, inventions, discoveries, softwa"
+    },
+    {
+      "index": 111,
+      "clause_type": "IP Ownership Assignment",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 5.7874860763549805,
+      "umap_y": 12.258066177368164,
+      "prediction": "\" about him or herself, as defined below, and whose URS Data has been provided to e-centives no later than 5 days after the original date the User became an Excite@Home Member. g) \"Shopping Category Data\" shall mean any information provided by a Program Member to e-centives which identifies the Prog",
+      "reference": "In the event that the Agreement is terminated pursuant to Section             16.a.v due to e-centives' acquisition by an Excite@Home Named             Competitor, or by an entity controlling or controlled by an             Excite@Home Named Competitor, e-centives shall transfer all of its          "
+    },
+    {
+      "index": 112,
+      "clause_type": "IP Ownership Assignment",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 5.567427158355713,
+      "umap_y": 12.722332000732422,
+      "prediction": "the extent that any Work Product is based on material provided by Imprimis, Surgical represents and warrants that it has the right to use such material. Surgical agrees that it shall not use or disclose any Work Product that is the property of Imprimis. 5.2. Imprimis acknowledges that Surgical has r",
+      "reference": "Surgical agrees that, at the request of Imprimis, Surgical will execute all such documents and perform all such acts as Imprimis or its duly authorized agents may reasonably require: (a) to effect the assignment of Work Product as agreed above; (b) to apply for, obtain, and vest in the name of Impri"
+    },
+    {
+      "index": 113,
+      "clause_type": "IP Ownership Assignment",
+      "cluster_id": 0,
+      "cluster_name": "Anti-Assignment \u2014 Over-generation / hallucination (39 examples)",
+      "umap_x": 6.376552581787109,
+      "umap_y": 12.567378997802734,
+      "prediction": "law to the appropriate authorities, or providing information to the authorities, as required by law. 5. Intellectual Property Ownership. (a) \"Intellectual Property\" means any and all patents, trademarks, trade names, copyrights, trade secrets, know-how, and all other intellectual property rights, in",
+      "reference": "At Aduro's request and expense, Consultant shall assist Aduro in acquiring and maintaining its right in and title to, any Work Product."
+    },
+    {
+      "index": 114,
+      "clause_type": "IP Ownership Assignment",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 7.140467643737793,
+      "umap_y": 11.562475204467773,
+      "prediction": "SI Site Functionality\" means, collectively, all of the following functionality of the ACSI Site, including, without limitation, the following: (a) the ACSI Site's ability to allow users to place orders for products listed on the ACSI Site through the ACSI Site; (b) the ACSI Site's ability to allow u",
+      "reference": "To the maximum extent permitted by applicable Laws, any ACSI Derivative Works or Company Derivative Works, to the extent created by or for the other Party, shall be deemed \"works made for hire\", and all right, title and interest therein shall vest in ACSI (in the case of ACSI Derivative Works) or Co"
+    },
+    {
+      "index": 115,
+      "clause_type": "IP Ownership Assignment",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 7.855940341949463,
+      "umap_y": 13.823535919189453,
+      "prediction": "Field as of the SPA Signing Date and/or as of the Effective Date. (f) \"Arizona Assigned Trademarks\" means the Arizona Licensed Trademarks set forth on Schedule 1.1(f) and all other Trademarks owned by Licensing or Seller as of the Effective Date and used or held for use exclusively in the Company Fi",
+      "reference": "Assignor does hereby irrevocably sell, convey, grant, set over, assign and transfer to Assignee, without reservation of any rights, title or interest, all of Assignor's worldwide and universal rights, title and interest in and to the Assigned Marks, including, but not limited to, the applications an"
+    },
+    {
+      "index": 116,
+      "clause_type": "IP Ownership Assignment",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 6.240227699279785,
+      "umap_y": 11.93126392364502,
+      "prediction": "Improvement\" being for the purpose of this Section 1.9 solely an improvement or modification to the existing Beacon Optofluidic Machine, not a new or enhanced version of the Beacon Platform). 1.10 \"Beacon Platform\" means the equipment, software, documentation, services and other materials provided b",
+      "reference": "In no event shall Ginkgo, and Ginkgo shall cause its Affiliates to not, file any patent applications covering (or support existing patent applications covering) the [***] and, in the event Ginkgo (or its Affiliates) do file one or more of such patent applications, Ginkgo will and hereby does assign,"
+    },
+    {
+      "index": 117,
+      "clause_type": "IP Ownership Assignment",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 6.73703145980835,
+      "umap_y": 11.632380485534668,
+      "prediction": "Exhibit B, as amended from time to time by mutual agreement of the parties, which procedures and precautions are designed to protect the Hosting Servers and the Microsoft Search Engine from unauthorized access, use, copying, modification, or other misuse of the Deployment, Hosting and Maintenance Sp",
+      "reference": "Inktomi, and Inktomi hereby irrevocably assigns to Microsoft an [*] interest therein."
+    },
+    {
+      "index": 118,
+      "clause_type": "Most Favored Nation",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 9.708616256713867,
+      "umap_y": 14.790448188781738,
+      "prediction": "March 1, 2010, April 1, 2010, May 1, 2010, June 1, 2010, July 1, 2010, August 1, 2010, and September 1, 2010, respectively. Racing shall also be entitled to receive a payment of $250,000.00 from the Sponsor in the event that the Racing Team participates in at least 10 races in the 2010 season. Racin",
+      "reference": "The Sponsor acknowledges that Racing has arranged and may arrange in the future for other sponsors  for the Racing Team. Racing agrees that, during the term of this Agreement, (i) Sponsor shall have the right to approve or disapprove any  additional sponsor identified by Racing, and (ii) unless anot"
+    },
+    {
+      "index": 119,
+      "clause_type": "Most Favored Nation",
+      "cluster_id": -1,
+      "cluster_name": "Noise / Outliers",
+      "umap_x": 6.929872035980225,
+      "umap_y": 13.283551216125488,
+      "prediction": "5. PROMOTION. Nantz Communications agrees to provide the Company with the following promotional services: 1. PROMOTIONAL MATERIALS. Nantz Communications agrees to provide the Company with the following promotional materials: (a) a press release announcing Nantz's association with Ashworth Products t",
+      "reference": "The Company acknowledges that Nantz Communications' and      Nantz's obligations to CBS or any other television station or network with      which Nantz Communications or Nantz has a contract or arrangement shall      take precedence over any other commitments of Nantz Communications or Nantz      u"
+    }
+  ]
+}

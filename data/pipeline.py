@@ -18,20 +18,17 @@ from __future__ import annotations
 import json
 import logging
 import math
-import re
 from collections import Counter
 from pathlib import Path
 
 import numpy as np
-from datasets import DatasetDict, load_dataset
+from datasets import load_dataset
 from datasketch import MinHash, MinHashLSH
 from tqdm import tqdm
 from transformers import AutoTokenizer
 
 from config import (
-    BASE_MODEL_ID,
     DATA_PROCESSED,
-    DATA_RAW,
     DATASET_NAME,
     INSTRUCTION_TEMPLATE,
     RANDOM_SEED,
@@ -58,7 +55,7 @@ def load_cuad() -> list[dict]:
     and tag each with its clause type.
     """
     log.info("Loading CUAD dataset from HuggingFace Hub...")
-    ds = load_dataset(DATASET_NAME, split="train", trust_remote_code=True)
+    ds = load_dataset(DATASET_NAME, split="train")
 
     samples = []
     for example in tqdm(ds, desc="Extracting CUAD samples"):
@@ -139,28 +136,40 @@ def deduplicate_minhash(
     Two samples are considered duplicates if their contract_text Jaccard
     similarity exceeds `threshold`. We keep the first occurrence.
 
+    Deduplication is scoped WITHIN each clause type: CUAD repeats the same
+    contract context across every clause question, so a single contract yields
+    one legitimate sample per target clause (extract Governing Law vs. extract
+    Audit Rights from the same text). Global dedup on contract_text alone would
+    wrongly collapse those distinct tasks into one; per-clause dedup only removes
+    genuinely redundant contracts within the same extraction task.
+
     MinHash LSH scales to millions of documents — this is the same technique
     used to deduplicate Common Crawl and The Pile.
     """
     log.info(f"Deduplicating {len(samples)} samples (threshold={threshold})...")
 
-    lsh = MinHashLSH(threshold=threshold, num_perm=num_perm)
+    by_clause: dict[str, list[dict]] = {}
+    for s in samples:
+        by_clause.setdefault(s["clause_type"], []).append(s)
+
     kept: list[dict] = []
     duplicate_count = 0
 
-    for i, sample in enumerate(tqdm(samples, desc="MinHash dedup")):
-        # Tokenise by whitespace for shingling
-        tokens = set(sample["contract_text"].lower().split())
-        m = MinHash(num_perm=num_perm)
-        for token in tokens:
-            m.update(token.encode("utf-8"))
+    for clause, clause_samples in by_clause.items():
+        lsh = MinHashLSH(threshold=threshold, num_perm=num_perm)
+        for i, sample in enumerate(tqdm(clause_samples, desc=f"MinHash dedup [{clause}]")):
+            # Tokenise by whitespace for shingling
+            tokens = set(sample["contract_text"].lower().split())
+            m = MinHash(num_perm=num_perm)
+            for token in tokens:
+                m.update(token.encode("utf-8"))
 
-        key = f"doc_{i}"
-        if not lsh.query(m):
-            lsh.insert(key, m)
-            kept.append(sample)
-        else:
-            duplicate_count += 1
+            key = f"{clause}_{i}"
+            if not lsh.query(m):
+                lsh.insert(key, m)
+                kept.append(sample)
+            else:
+                duplicate_count += 1
 
     log.info(f"Removed {duplicate_count} near-duplicates. Kept {len(kept)} samples.")
     return kept
@@ -173,48 +182,53 @@ def deduplicate_minhash(
 
 def filter_by_perplexity(
     samples: list[dict],
-    tokenizer: AutoTokenizer,
-    max_ppl: float = 200.0,
-    min_ppl: float = 5.0,
+    tokenizer: AutoTokenizer = None,
+    low_pct: float = 5.0,
+    high_pct: float = 95.0,
 ) -> list[dict]:
     """
-    Remove samples with extreme perplexity scores using a unigram language model.
+    Remove samples with extreme perplexity using a unigram language model.
 
     Very HIGH perplexity = incoherent / garbled OCR / non-English text
     Very LOW perplexity  = highly repetitive boilerplate (e.g. all same clause)
 
-    We use a unigram token frequency model (no GPU needed for this step).
+    Thresholds are PERCENTILE-based (drop the bottom `low_pct`% and top
+    `high_pct`% of samples by perplexity) rather than fixed absolute values.
+    Legal-contract vocabulary has a heavy tail, so a fixed max-perplexity cutoff
+    is impossible to calibrate and can silently discard the entire corpus; the
+    percentile approach is scale-free and always keeps the bulk of the data.
+
+    Uses a unigram token frequency model (no GPU needed for this step).
     """
     log.info(f"Perplexity filtering {len(samples)} samples...")
+
+    if len(samples) < 20:
+        log.info("Too few samples for percentile filtering; skipping.")
+        return samples
 
     # Build unigram frequency table over all contract texts
     all_text = " ".join(s["contract_text"] for s in samples)
     tokens = all_text.lower().split()
     freq = Counter(tokens)
-    vocab_size = len(freq)
     total = sum(freq.values())
     log_prob = {t: math.log((c / total) + 1e-10) for t, c in freq.items()}
     unk_log_prob = math.log(1e-10)
 
-    kept: list[dict] = []
-    removed_high = removed_low = 0
-
-    for sample in tqdm(samples, desc="Perplexity filter"):
+    def _ppl(sample: dict) -> float:
         words = sample["contract_text"].lower().split()
         if len(words) < 10:
-            removed_high += 1
-            continue
-        ppl = math.exp(-sum(log_prob.get(w, unk_log_prob) for w in words) / len(words))
-        if ppl > max_ppl:
-            removed_high += 1
-        elif ppl < min_ppl:
-            removed_low += 1
-        else:
-            kept.append(sample)
+            return float("inf")
+        return math.exp(-sum(log_prob.get(w, unk_log_prob) for w in words) / len(words))
 
+    ppls = np.array([_ppl(s) for s in samples])
+    finite = ppls[np.isfinite(ppls)]
+    lo = float(np.percentile(finite, low_pct))
+    hi = float(np.percentile(finite, high_pct))
+
+    kept = [s for s, p in zip(samples, ppls) if lo <= p <= hi]
     log.info(
-        f"Perplexity filter: removed {removed_high} high-ppl, "
-        f"{removed_low} low-ppl. Kept {len(kept)}."
+        f"Perplexity filter: kept {len(kept)}/{len(samples)} "
+        f"(ppl range [{lo:.1f}, {hi:.1f}])."
     )
     return kept
 
@@ -347,7 +361,7 @@ def write_dataset_card(
     }
 
     card_path = save_dir / "dataset_card.json"
-    card_path.write_text(json.dumps(card, indent=2))
+    card_path.write_text(json.dumps(card, indent=2), encoding="utf-8")
     log.info(f"Dataset card written to {card_path}")
 
     # Print a quick summary
@@ -388,7 +402,9 @@ def run_pipeline() -> None:
     # Step 6: Save
     for split_name, split_data in [("train", train), ("val", val), ("test", test)]:
         path = DATA_PROCESSED / f"{split_name}.json"
-        path.write_text(json.dumps(split_data, indent=2, ensure_ascii=False))
+        path.write_text(
+            json.dumps(split_data, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
         log.info(f"Saved {len(split_data)} {split_name} samples → {path}")
 
     write_dataset_card(train, val, test, DATA_PROCESSED)

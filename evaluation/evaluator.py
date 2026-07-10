@@ -26,18 +26,20 @@ import argparse
 import json
 import logging
 import math
-import os
-from pathlib import Path
 from typing import Literal
 
 import mlflow
 import numpy as np
+
+# `datasets`/pyarrow must be imported before torch (Windows segfault guard —
+# see training/train_lora.py). bert_score pulls in datasets transitively.
+import datasets  # noqa: F401
+
 import torch
 from bert_score import score as bert_score_fn
 from tqdm import tqdm
 from transformers import (
     AutoModelForCausalLM,
-    AutoModelForSequenceClassification,
     AutoTokenizer,
     pipeline,
 )
@@ -50,13 +52,13 @@ from config import (
     DATA_PROCESSED,
     ECE_BINS,
     EVAL_BATCH_SIZE,
+    EVAL_MAX_SAMPLES,
     GEVAL_MODEL,
     GROQ_API_KEY,
     HF_TOKEN,
     MAX_NEW_TOKENS,
     MLFLOW_TRACKING_URI,
     RESULTS,
-    QLORA_BNB_CONFIG,
 )
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -82,23 +84,36 @@ def load_model_for_eval(tag: ModelTag) -> tuple:
     login_kwargs = {"token": HF_TOKEN} if HF_TOKEN else {}
     checkpoint = CHECKPOINT_MAP[tag]
 
+    # Load the base in 4-bit for evaluation. On an 8GB GPU a bf16 base (~6.4GB)
+    # plus the BERTScore/NLI scorer models would OOM. 4-bit also makes the
+    # comparison fair: every variant is scored against the SAME 4-bit base, so
+    # differences reflect the adapter, not the base's precision.
+    from transformers import BitsAndBytesConfig
+
+    bnb_config = BitsAndBytesConfig(
+        load_in_4bit=True,
+        bnb_4bit_quant_type="nf4",
+        bnb_4bit_compute_dtype=torch.bfloat16,
+        bnb_4bit_use_double_quant=True,
+    )
+
     if tag == "base":
-        log.info(f"Loading base model: {BASE_MODEL_ID}")
+        log.info(f"Loading base model (4-bit): {BASE_MODEL_ID}")
         tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_ID, **login_kwargs)
         model = AutoModelForCausalLM.from_pretrained(
             BASE_MODEL_ID,
-            torch_dtype=torch.bfloat16,
+            quantization_config=bnb_config,
             device_map="auto",
             **login_kwargs,
         )
     else:
-        log.info(f"Loading fine-tuned model from: {checkpoint}")
+        log.info(f"Loading fine-tuned model (4-bit base) from: {checkpoint}")
         from peft import PeftModel
 
         tokenizer = AutoTokenizer.from_pretrained(checkpoint, **login_kwargs)
         base = AutoModelForCausalLM.from_pretrained(
             BASE_MODEL_ID,
-            torch_dtype=torch.bfloat16,
+            quantization_config=bnb_config,
             device_map="auto",
             **login_kwargs,
         )
@@ -136,12 +151,14 @@ def generate_responses(
                 max_length=1024,
             ).to(model.device)
 
-            with torch.cuda.amp.autocast(dtype=torch.bfloat16):
+            with torch.autocast(
+                device_type="cuda" if torch.cuda.is_available() else "cpu",
+                dtype=torch.bfloat16,
+            ):
                 output_ids = model.generate(
                     **inputs,
                     max_new_tokens=MAX_NEW_TOKENS,
                     do_sample=False,  # greedy for reproducibility
-                    temperature=1.0,
                     pad_token_id=tokenizer.eos_token_id,
                 )
 
@@ -179,6 +196,7 @@ def compute_bertscore(predictions: list[str], references: list[str]) -> dict:
         "bertscore_recall": float(R.mean()),
         "bertscore_f1": float(F1.mean()),
         "bertscore_f1_std": float(F1.std()),
+        "_f1_per_sample": [round(float(x), 4) for x in F1.tolist()],  # consumed by evaluate()
     }
 
 
@@ -246,7 +264,13 @@ def compute_geval(
             reference=references[idx],
             prediction=predictions[idx],
         )
-        response_text = _call_judge_llm(prompt)
+        try:
+            response_text = _call_judge_llm(prompt)
+        except Exception as e:
+            # A bad/expired API key or network error must never crash the whole
+            # evaluation — G-Eval is an optional metric. Skip it and move on.
+            log.warning(f"G-Eval judge unavailable ({type(e).__name__}); skipping G-Eval.")
+            break
 
         try:
             import re
@@ -445,7 +469,8 @@ def compute_calibration(
     log.info("Computing calibration (ECE)...")
 
     confidences = []
-    accuracies = []
+    preds: list[str] = []
+    refs: list[str] = []
 
     model.eval()
     with torch.no_grad():
@@ -461,7 +486,10 @@ def compute_calibration(
                 max_length=1024,
             ).to(model.device)
 
-            with torch.cuda.amp.autocast(dtype=torch.bfloat16):
+            with torch.autocast(
+                device_type="cuda" if torch.cuda.is_available() else "cpu",
+                dtype=torch.bfloat16,
+            ):
                 output = model.generate(
                     **inputs,
                     max_new_tokens=MAX_NEW_TOKENS,
@@ -471,8 +499,8 @@ def compute_calibration(
                     pad_token_id=tokenizer.eos_token_id,
                 )
 
-            # Mean token log-probability as proxy for confidence
-            scores = output.scores  # tuple of (vocab_size,) tensors
+            # Mean top-token probability across generated steps = confidence proxy
+            scores = output.scores  # tuple of (1, vocab_size) tensors
             if scores:
                 log_probs = [
                     torch.max(torch.log_softmax(s[0], dim=-1)).item() for s in scores
@@ -482,23 +510,22 @@ def compute_calibration(
             else:
                 confidence = 0.5
 
-            # Decode prediction
             new_ids = output.sequences[:, inputs["input_ids"].shape[1] :]
-            pred_text = tokenizer.decode(new_ids[0], skip_special_tokens=True).strip()
-
-            # Accuracy proxy: BERTScore F1 > 0.7 threshold
-            _, _, f1 = bert_score_fn(
-                [pred_text],
-                [reference],
-                model_type=BERTSCORE_MODEL,
-                device="cuda" if torch.cuda.is_available() else "cpu",
-                verbose=False,
-                batch_size=1,
-            )
-            accuracy = float(f1[0] > 0.7)
-
+            preds.append(tokenizer.decode(new_ids[0], skip_special_tokens=True).strip())
+            refs.append(reference)
             confidences.append(confidence)
-            accuracies.append(accuracy)
+
+    # Score ALL predictions in a single BERTScore pass (loading the scorer once,
+    # not once-per-sample). Accuracy proxy: F1 > 0.7.
+    _, _, f1 = bert_score_fn(
+        preds,
+        refs,
+        model_type=BERTSCORE_MODEL,
+        device="cuda" if torch.cuda.is_available() else "cpu",
+        verbose=False,
+        batch_size=8,
+    )
+    accuracies = [float(x > 0.7) for x in f1.tolist()]
 
     # Bin and compute ECE
     confidences_arr = np.array(confidences)
@@ -546,13 +573,20 @@ def evaluate(tag: ModelTag, run_existing: bool = False) -> dict:
     results_path = RESULTS / f"{tag}_eval.json"
     if results_path.exists() and not run_existing:
         log.info(f"Results already exist: {results_path}. Loading cached.")
-        return json.loads(results_path.read_text())
+        return json.loads(results_path.read_text(encoding="utf-8"))
 
     # Load test set
     test_path = DATA_PROCESSED / "test.json"
     if not test_path.exists():
         raise FileNotFoundError("Run data pipeline first: python -m data.pipeline")
-    test_data = json.loads(test_path.read_text())
+    test_data = json.loads(test_path.read_text(encoding="utf-8"))
+
+    # Seeded random subset for tractable runtime on an 8GB GPU. Same seed across
+    # models => identical sample set => a fair comparison.
+    if len(test_data) > EVAL_MAX_SAMPLES:
+        rng = np.random.default_rng(42)
+        idx = sorted(rng.choice(len(test_data), size=EVAL_MAX_SAMPLES, replace=False))
+        test_data = [test_data[i] for i in idx]
 
     prompts = [s["prompt"] for s in test_data]
     references = [s["answer"] for s in test_data]
@@ -570,22 +604,32 @@ def evaluate(tag: ModelTag, run_existing: bool = False) -> dict:
     # Compute all metrics
     metrics: dict = {"model": tag, "n_test": len(test_data)}
 
-    metrics.update(compute_bertscore(predictions, references))
+    bert = compute_bertscore(predictions, references)
+    f1_per_sample = bert.pop("_f1_per_sample")  # not logged; used for failure analysis
+    metrics.update(bert)
     metrics.update(compute_geval(predictions, references, contract_texts, clause_types))
     metrics.update(compute_clause_accuracy(predictions, references, clause_types))
     metrics.update(compute_hallucination_rate(predictions, contract_texts))
 
-    calib = compute_calibration(model, tokenizer, prompts[:100], references[:100])
+    calib = compute_calibration(model, tokenizer, prompts[:40], references[:40])
     metrics["ece"] = calib["ece"]
     metrics["bin_stats"] = calib["bin_stats"]
 
-    # Save predictions alongside metrics
-    metrics["predictions_sample"] = [
-        {"prompt": p[:200], "reference": r, "prediction": pred, "clause_type": c}
-        for p, r, pred, c in zip(
-            prompts[:20], references[:20], predictions[:20], clause_types[:20]
+    # Save EVERY test prediction with its per-sample BERTScore F1 so the failure
+    # analysis can filter genuine failures (F1 < threshold), not just a sample.
+    metrics["predictions"] = [
+        {
+            "prompt": p[:200],
+            "reference": r,
+            "prediction": pred,
+            "clause_type": c,
+            "bertscore_f1": s,
+        }
+        for p, r, pred, c, s in zip(
+            prompts, references, predictions, clause_types, f1_per_sample
         )
     ]
+    metrics["predictions_sample"] = metrics["predictions"][:20]  # small preview
 
     # Log to MLflow
     mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
@@ -600,7 +644,9 @@ def evaluate(tag: ModelTag, run_existing: bool = False) -> dict:
         mlflow.log_params({"model_tag": tag, "n_test": len(test_data)})
 
     # Save results
-    results_path.write_text(json.dumps(metrics, indent=2, default=str))
+    results_path.write_text(
+        json.dumps(metrics, indent=2, default=str), encoding="utf-8"
+    )
     log.info(f"Results saved to {results_path}")
 
     return metrics
@@ -612,10 +658,12 @@ def compare_all() -> dict:
     for tag in ["base", "lora", "qlora", "dpo"]:
         path = RESULTS / f"{tag}_eval.json"
         if path.exists():
-            all_results[tag] = json.loads(path.read_text())
+            all_results[tag] = json.loads(path.read_text(encoding="utf-8"))
 
     comparison_path = RESULTS / "comparison.json"
-    comparison_path.write_text(json.dumps(all_results, indent=2, default=str))
+    comparison_path.write_text(
+        json.dumps(all_results, indent=2, default=str), encoding="utf-8"
+    )
     return all_results
 
 

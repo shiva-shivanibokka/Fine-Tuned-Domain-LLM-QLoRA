@@ -12,32 +12,28 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 import sys
 import time
-from pathlib import Path
 
 import mlflow
-import torch
+
+# NOTE: `datasets` (pyarrow) MUST be imported before `torch`. On Windows/Anaconda
+# with pyarrow>=24 + torch, importing arrow after torch segfaults the interpreter.
 from datasets import Dataset
+
+import torch
 from peft import LoraConfig, TaskType, get_peft_model
-from transformers import (
-    AutoModelForCausalLM,
-    AutoTokenizer,
-    DataCollatorForSeq2Seq,
-    TrainingArguments,
-)
+from transformers import AutoModelForCausalLM, AutoTokenizer
 from trl import SFTConfig, SFTTrainer
 
 from config import (
     BASE_MODEL_ID,
-    CHECKPOINTS,
     DATA_PROCESSED,
     HF_TOKEN,
+    LORA_BNB_CONFIG,
     LORA_CONFIG,
     LORA_TRAINING_ARGS,
     MLFLOW_TRACKING_URI,
-    SYSTEM_PROMPT,
 )
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -54,11 +50,15 @@ def load_splits() -> tuple[Dataset, Dataset]:
         log.error("Run: python -m data.pipeline first.")
         sys.exit(1)
 
-    train_data = json.loads(train_path.read_text())
-    val_data = json.loads(val_path.read_text())
+    train_data = json.loads(train_path.read_text(encoding="utf-8"))
+    val_data = json.loads(val_path.read_text(encoding="utf-8"))
 
-    train_ds = Dataset.from_list(train_data)
-    val_ds = Dataset.from_list(val_data)
+    # Keep ONLY the "text" field. TRL 1.x SFTTrainer auto-detects dataset format
+    # from column names: a "prompt" column (which our records carry for inference)
+    # would trigger prompt-completion mode and fail with KeyError('completion').
+    # Restricting to "text" forces plain language-modeling on the full sequence.
+    train_ds = Dataset.from_list(train_data).select_columns(["text"])
+    val_ds = Dataset.from_list(val_data).select_columns(["text"])
 
     log.info(f"Loaded {len(train_ds)} train, {len(val_ds)} val examples")
     return train_ds, val_ds
@@ -88,14 +88,19 @@ def load_model_and_tokenizer(
     if quantize and bnb_config_dict:
         from transformers import BitsAndBytesConfig
 
-        bnb_config = BitsAndBytesConfig(
-            load_in_4bit=bnb_config_dict["load_in_4bit"],
-            bnb_4bit_quant_type=bnb_config_dict["bnb_4bit_quant_type"],
-            bnb_4bit_compute_dtype=getattr(
-                torch, bnb_config_dict["bnb_4bit_compute_dtype"]
-            ),
-            bnb_4bit_use_double_quant=bnb_config_dict["bnb_4bit_use_double_quant"],
-        )
+        if bnb_config_dict.get("load_in_8bit"):
+            # Run A: 8-bit base (fits an 8GB GPU where bf16 would not).
+            bnb_config = BitsAndBytesConfig(load_in_8bit=True)
+        else:
+            # Run B: 4-bit NF4 QLoRA.
+            bnb_config = BitsAndBytesConfig(
+                load_in_4bit=bnb_config_dict["load_in_4bit"],
+                bnb_4bit_quant_type=bnb_config_dict["bnb_4bit_quant_type"],
+                bnb_4bit_compute_dtype=getattr(
+                    torch, bnb_config_dict["bnb_4bit_compute_dtype"]
+                ),
+                bnb_4bit_use_double_quant=bnb_config_dict["bnb_4bit_use_double_quant"],
+            )
         model = AutoModelForCausalLM.from_pretrained(
             BASE_MODEL_ID,
             quantization_config=bnb_config,
@@ -208,12 +213,20 @@ def train(
 
         # Apply LoRA
         if quantize:
-            # QLoRA: prepare model for k-bit training first
+            # QLoRA: prepare model for k-bit training first. We do NOT enable
+            # gradient checkpointing here — the SFTTrainer enables it (with
+            # use_reentrant=False). Enabling it in both places with mismatched
+            # reentrant settings silently cancels the memory savings.
             from peft import prepare_model_for_kbit_training
 
-            model = prepare_model_for_kbit_training(model)
+            model = prepare_model_for_kbit_training(
+                model, use_gradient_checkpointing=False
+            )
 
         model = apply_lora(model, LORA_CONFIG)
+        # Required for gradient checkpointing with a (frozen-base) LoRA model:
+        # lets gradients flow back through the checkpointed base into the adapters.
+        model.enable_input_require_grads()
         trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
         all_params = sum(p.numel() for p in model.parameters())
         mlflow.log_params(
@@ -240,13 +253,18 @@ def train(
             eval_steps=args_dict["eval_steps"],
             save_steps=args_dict["save_steps"],
             save_total_limit=args_dict["save_total_limit"],
+            eval_strategy="steps",
+            save_strategy="steps",
             load_best_model_at_end=args_dict["load_best_model_at_end"],
             metric_for_best_model=args_dict["metric_for_best_model"],
             report_to="none",  # we handle MLflow manually
             max_grad_norm=args_dict["max_grad_norm"],
-            max_seq_length=1024,
+            max_length=768,  # shorter seq lowers activation memory on 8GB VRAM
             dataset_text_field="text",
             packing=False,
+            # Trade compute for memory so bf16 LoRA fits in 8GB VRAM (no PCIe spill).
+            gradient_checkpointing=True,
+            gradient_checkpointing_kwargs={"use_reentrant": False},
         )
 
         # Trainer
@@ -255,7 +273,7 @@ def train(
             args=training_args,
             train_dataset=train_ds,
             eval_dataset=val_ds,
-            tokenizer=tokenizer,
+            processing_class=tokenizer,  # TRL 1.x renamed tokenizer -> processing_class
         )
 
         # Train
@@ -301,4 +319,5 @@ def train(
 
 
 if __name__ == "__main__":
-    train()
+    # Run A: 8-bit LoRA (see LORA_BNB_CONFIG rationale in config.py).
+    train(quantize=True, bnb_config_dict=LORA_BNB_CONFIG)

@@ -133,8 +133,8 @@ export default function Dashboard({
 
       <footer className="footer">
         Llama 3.2 3B fine-tuned on CUAD via QLoRA + DPO · evaluated with
-        BERTScore, NLI-grounded hallucination, and ECE calibration · served
-        from a Hugging Face Space, frontend on Vercel. Results are real, from a
+        BERTScore, NLI-grounded hallucination, and ECE calibration · served on a
+        serverless GPU (Modal), frontend on Vercel. Results are real, from a
         120-sample held-out test set.
       </footer>
     </main>

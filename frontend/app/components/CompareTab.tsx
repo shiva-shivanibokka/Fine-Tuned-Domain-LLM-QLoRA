@@ -95,8 +95,8 @@ export default function CompareTab() {
               {loading ? "Reading the contract…" : "Compare the two analysts"}
             </button>
             <p className="note" style={{ marginTop: ".7rem" }}>
-              Inference runs on a free Hugging Face Space; the first request after
-              idle can take ~30s while the model wakes up.
+              Inference runs on a serverless GPU that scales to zero; the first
+              request after idle can take ~30s while the model wakes up.
             </p>
           </div>
 

@@ -1,15 +1,14 @@
-// Server-side proxy to the Hugging Face inference Space (Gradio SDK + ZeroGPU).
+// Server-side proxy to the Modal serverless-GPU backend (serving/modal_app.py).
 //
-// Uses @gradio/client to call the Space's `/compare` API endpoint. Keeps the
-// Space id / token server-side and sidesteps CORS. Configure via env:
-//   HF_SPACE_ID     e.g. "shiva-1993/cuad-legal-llm" (or a full Space URL)
-//   HF_SPACE_TOKEN  optional, only for a private Space
+// Modal serves base Llama 3.2 3B vs the fine-tuned QLoRA+DPO adapter on a T4 that
+// scales to zero. Configure via env:
+//   MODAL_COMPARE_URL   the deployed https://...compare.modal.run endpoint
 
-import { Client } from "@gradio/client";
+export const maxDuration = 300; // allow for Modal cold start on Fluid Compute
 
 export async function POST(request: Request) {
-  const spaceId = process.env.HF_SPACE_ID;
-  if (!spaceId) {
+  const url = process.env.MODAL_COMPARE_URL;
+  if (!url) {
     return Response.json(
       {
         error:
@@ -34,30 +33,23 @@ export async function POST(request: Request) {
   }
 
   try {
-    const token = process.env.HF_SPACE_TOKEN as `hf_${string}` | undefined;
-    const client = await Client.connect(spaceId, token ? { token } : {});
-    const result = await client.predict("/compare", {
-      contract_text: body.contract_text,
-      clause_type: body.clause_type ?? "Governing Law",
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contract_text: body.contract_text,
+        clause_type: body.clause_type ?? "Governing Law",
+      }),
+      signal: AbortSignal.timeout(290_000),
     });
-
-    const [base, finetuned, baseMs, ftMs] = result.data as [
-      string,
-      string,
-      number,
-      number,
-    ];
-    return Response.json({
-      base_output: base,
-      finetuned_output: finetuned,
-      latency_base_ms: baseMs,
-      latency_finetuned_ms: ftMs,
-    });
+    if (!res.ok) throw new Error(`backend ${res.status}`);
+    // Modal returns exactly { base_output, finetuned_output, latency_base_ms, latency_finetuned_ms }.
+    return Response.json(await res.json());
   } catch {
     return Response.json(
       {
         error:
-          "Could not reach the inference backend. The ZeroGPU Space may be waking up (cold start) — try again in a moment.",
+          "Could not reach the inference backend. The GPU may be waking up (cold start) — try again in a moment.",
       },
       { status: 504 },
     );

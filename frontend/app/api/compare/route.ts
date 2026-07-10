@@ -11,7 +11,10 @@ export async function POST(request: Request) {
   const spaceId = process.env.HF_SPACE_ID;
   if (!spaceId) {
     return Response.json(
-      { error: "Inference backend not configured (set HF_SPACE_ID)." },
+      {
+        error:
+          "Live model comparison requires the GPU inference backend, which isn't connected in this demo. The Ablation Dashboard, Failure Explorer, and Dataset tabs use real evaluation results and are fully interactive.",
+      },
       { status: 503 },
     );
   }

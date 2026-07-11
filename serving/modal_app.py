@@ -97,6 +97,7 @@ class _nullctx:
     volumes={"/cache": hf_cache},
     secrets=[modal.Secret.from_name("huggingface")],
     scaledown_window=300,  # stay warm 5 min after the last request, then scale to zero
+    max_containers=2,  # cost guardrail: cap concurrent GPU containers for a demo
     timeout=600,
 )
 class CUADModel:

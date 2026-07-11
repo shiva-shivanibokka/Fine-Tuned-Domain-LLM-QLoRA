@@ -242,12 +242,19 @@ Unit tests cover the data-pipeline logic most prone to silent breakage (per-clau
 
 ---
 
-## Roadmap / Known Limitations
+## Future Work
 
-- **BERTScore did not improve over base** — the fine-tuned model's gains are in calibration and hallucination. Adding a reference-flexible metric (or exact-span F1) would characterize extraction quality better than embedding overlap alone.
-- **DPO produced no measurable preference signal** on 114 auto-generated pairs. Next step: a larger, human-or-heuristic-verified preference set, and switching to an explicit reference model for cleaner reward margins.
-- **Evaluation runs on a 120-sample subset** for tractable runtime on a laptop GPU; the full test set would tighten the confidence intervals.
-- **G-Eval (LLM-as-judge)** is optional and skipped without an API key; the four intrinsic metrics run without one.
+The project is complete and deployed; these are the highest-value next steps, deliberately scoped and honest about their expected payoff:
+
+- **A stronger DPO run.** The current DPO produced no measurable preference signal (flat reward margins on 114 auto-generated pairs, `ref_model=None` with a PEFT policy). Next: an explicit reference model and a larger, human- or heuristic-verified preference set with non-trivial rejected examples.
+- **Full-test-set evaluation with confidence intervals.** Evaluation currently runs on a fixed 120-sample subset for laptop tractability; running the full test set across multiple seeds would tighten the numbers and let differences be reported with error bars.
+- **A genuinely better extractor.** Higher LoRA rank / more epochs / cleaner supervision to actually beat the base model on extraction quality, plus an exact-span or reference-flexible metric alongside BERTScore. (Uncertain payoff for a 3B on this data — the current honest finding, that fine-tuning improved *trustworthiness* not overlap, is arguably the more valuable result.)
+
+## Known Limitations
+
+- **BERTScore did not improve over base** — the fine-tuned model's measured gains are in calibration and hallucination, not embedding overlap. This is a real, documented finding, not a defect: it's exactly why the harness measures five things.
+- **The fine-tuned model over-generates / hallucinates** on many inputs (hallucination rate 0.815). The live comparison shows this honestly rather than hiding it.
+- **G-Eval (LLM-as-judge)** is optional and skipped without an API key; the four intrinsic metrics run without one, and LLM judges carry a known verbosity bias (mitigated in the judge prompt).
 
 ---
 

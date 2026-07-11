@@ -42,3 +42,5 @@ next-env.d.ts
 
 .vercel
 .env*
+# ...but keep the committed template so contributors know what to set
+!.env.local.example

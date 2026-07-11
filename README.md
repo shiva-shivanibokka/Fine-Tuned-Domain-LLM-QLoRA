@@ -7,7 +7,7 @@
 ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)
 ![Next.js 16](https://img.shields.io/badge/Next.js-16-black)
 
-**🔗 Live demo: [cuad-legal-llm.vercel.app](https://cuad-legal-llm.vercel.app)** — ablation dashboard, failure explorer, and dataset views run live (the interactive model comparison requires the inference backend below).
+**🔗 Live demo: [cuad-legal-llm.vercel.app](https://cuad-legal-llm.vercel.app)** — all four views are live: the interactive base-vs-fine-tuned comparison runs on a serverless GPU (Modal), and the ablation dashboard, failure explorer, and dataset views serve committed evaluation snapshots.
 
 ---
 
@@ -26,9 +26,9 @@ Contract review is slow, expensive, and exactly the kind of narrow, high-stakes 
 - **Domain:** legal clause extraction on **CUAD** (Contract Understanding Atticus Dataset — 510 attorney-annotated contracts).
 - **Technique:** parameter-efficient fine-tuning with **QLoRA (4-bit)** followed by **DPO** preference optimization — the modern alternative to RLHF.
 - **Evaluation:** BERTScore, LLM-as-judge (G-Eval), NLI-based hallucination rate, **Expected Calibration Error (ECE)**, and UMAP + HDBSCAN failure-mode clustering.
-- **Serving:** a FastAPI inference API deployable to a free Hugging Face Space (ZeroGPU), with a **Next.js** dashboard on Vercel.
+- **Serving:** a **Modal** serverless-GPU backend (T4, scales to zero — no idle cost) that runs the base and fine-tuned models side by side, behind a **Next.js** dashboard on Vercel.
 
-It is built and documented as a portfolio piece: the interesting parts are the engineering tradeoffs and the honest, multi-metric evaluation — not an inflated accuracy number.
+It is built and documented as a portfolio piece: the interesting parts are the engineering tradeoffs and the honest, multi-metric evaluation — not an inflated accuracy number. The live comparison even shows this honesty in action: on many inputs the fine-tuned model over-generates, the exact hallucination the failure-analysis harness quantifies.
 
 ---
 
@@ -62,7 +62,7 @@ The headline is *not* "fine-tuned model beats base on everything." It's more int
 - **Data quality pipeline** — CUAD → per-clause MinHash-LSH deduplication → percentile perplexity filtering → chat-template formatting → stratified split → dataset card.
 - **Five-metric evaluation** — BERTScore F1, G-Eval (LLM-as-judge), NLI hallucination rate, clause-presence accuracy, and ECE with reliability bins.
 - **Failure-mode analysis** — embeds failing predictions, projects with UMAP, clusters with HDBSCAN, and auto-labels each cluster by clause type + error pattern.
-- **Inference API** — FastAPI with a memory-efficient single-model design (one base model, adapters toggled via PEFT) that fits a free 16 GB CPU/ZeroGPU Space.
+- **Serverless-GPU inference** — a Modal app (T4, scale-to-zero) with a memory-efficient single-model design (one 4-bit base, LoRA adapter toggled via PEFT), HF weights cached in a Modal Volume for fast cold starts. A standalone FastAPI app (`serving/api.py`) mirrors it for local use.
 - **Next.js dashboard** — 4 views (live comparison, ablation dashboard, failure explorer, dataset), plus a **bring-your-own-key LLM judge** supporting Anthropic, OpenAI, Google, and Groq.
 - **Reproducible** — one-command orchestrator, pinned dependencies, unit tests, and CI.
 
@@ -84,14 +84,17 @@ flowchart TD
         F --> G[scripts/export_frontend_data.py]
     end
 
-    subgraph Hub["Hugging Face"]
-        C -. push adapter .-> H[(HF Hub adapter)]
-        H --> I[HF Space<br/>FastAPI + ZeroGPU]
+    subgraph Hub["Hugging Face Hub"]
+        C -. push adapter .-> H[(LoRA adapter)]
+    end
+
+    subgraph ModalCloud["Modal — serverless GPU"]
+        H -. pulled at cold start .-> I[T4 · base 4-bit + adapter<br/>scale-to-zero]
     end
 
     subgraph Vercel["Vercel — Next.js"]
         G -- committed JSON --> J[Dashboard / Failures / Dataset<br/>static, instant]
-        K[Model Comparison] -- /api/compare --> I
+        K[Live Comparison] -- /api/compare --> I
         L[BYOK LLM Judge] -- /api/judge --> M[Anthropic / OpenAI<br/>Google / Groq]
     end
 
@@ -100,7 +103,7 @@ flowchart TD
     User --> L
 ```
 
-**Why this shape?** The base weights (~6.4 GB in bf16) dominate memory, so training uses 4-bit quantization to fit an 8 GB card, and the inference API loads the base **once** and toggles LoRA adapters rather than holding multiple full copies. On the frontend, baking evaluation results into static JSON means the dashboard costs nothing to serve and never waits on a cold GPU — only the "Compare" action pays that latency.
+**Why this shape?** The base weights (~6.4 GB in bf16) dominate memory, so training uses 4-bit quantization to fit an 8 GB card, and the inference backend loads the base **once** and toggles the LoRA adapter rather than holding multiple full copies. Modal's scale-to-zero means the GPU costs nothing while idle and only spins up on a real request. On the frontend, baking evaluation results into static JSON means three tabs cost nothing to serve and never wait on a cold GPU — only the "Compare" action pays that latency. One subtle but critical serving detail: inference must rebuild the **exact** training prompt (a clean Llama-3.2 chat template), because `tokenizer.apply_chat_template` injects a date preamble that makes the tuned adapter degenerate — a good example of train/serve skew.
 
 ---
 
@@ -114,8 +117,8 @@ flowchart TD
 | Evaluation | `bert-score`, `sentence-transformers` (NLI), `anthropic`/`openai` (G-Eval) | Semantic + faithfulness + calibration, not n-gram overlap |
 | Failure analysis | `umap-learn`, `hdbscan` | Finds arbitrary-shaped clusters without pre-specifying `k` |
 | Tracking | MLflow | Per-run params/metrics/artifacts |
-| Serving | FastAPI + Hugging Face Space (ZeroGPU) | Free GPU bursts for a public demo |
-| Frontend | Next.js 16 (App Router) on Vercel | Server route handlers proxy the Space + hide keys |
+| Serving | Modal serverless GPU (T4, scale-to-zero) | On-demand GPU with no idle cost — effectively free within the monthly credit |
+| Frontend | Next.js 16 (App Router) on Vercel | Server route handlers proxy the Modal endpoint + hide keys |
 | Tooling | pytest, ruff, GitHub Actions | Tests + lint in CI |
 
 ---
@@ -166,7 +169,7 @@ python -m scripts.export_frontend_data
 ```bash
 cd frontend
 npm install
-cp .env.local.example .env.local          # set HF_SPACE_ID to your Space
+cp .env.local.example .env.local          # set MODAL_COMPARE_URL to your Modal endpoint
 npm run dev                                # http://localhost:3000
 ```
 
@@ -207,8 +210,10 @@ curl -X POST http://localhost:8000/compare \
 ├── evaluation/
 │   ├── evaluator.py          5-metric evaluation harness
 │   └── failure_analysis.py   UMAP + HDBSCAN failure clustering
-├── serving/api.py            FastAPI inference API (single-model adapter toggling)
-├── space/                    Hugging Face Space (Gradio SDK + ZeroGPU) for hosting
+├── serving/
+│   ├── modal_app.py          Modal serverless-GPU backend (T4, scale-to-zero) — the live one
+│   └── api.py                Standalone FastAPI inference API (single-model adapter toggling) for local use
+├── space/                    Legacy Hugging Face Space (Gradio SDK + ZeroGPU) — kept as a fallback
 ├── frontend/                 Next.js 16 dashboard + BYOK LLM judge (deploys to Vercel)
 ├── scripts/
 │   ├── run_all.py            One-command pipeline orchestrator
@@ -233,7 +238,7 @@ Unit tests cover the data-pipeline logic most prone to silent breakage (per-clau
 
 - **Frontend — live on Vercel:** [cuad-legal-llm.vercel.app](https://cuad-legal-llm.vercel.app), connected to this GitHub repo (root directory `frontend`), so pushes to `main` auto-deploy. The dashboard, failure explorer, and dataset tabs serve committed result snapshots and work with no backend.
 - **Trained adapter — on the Hub:** [`shiva-1993/llama-3.2-3b-cuad-dpo`](https://huggingface.co/shiva-1993/llama-3.2-3b-cuad-dpo).
-- **Inference backend (`space/`):** a Gradio SDK Space that exposes the `compare` / `generate` API the frontend calls (set `ADAPTER_REPO` + `HF_TOKEN`, and `HF_SPACE_ID` on Vercel). Hugging Face now requires a **PRO subscription** to host non-static Spaces, so the live model comparison is enabled on a PRO account (which also unlocks free ZeroGPU); the app is hardware-agnostic and falls back to CPU where a GPU isn't available. Until the backend is connected, the Compare tab shows a "backend not configured" state and the rest of the site is fully functional.
+- **Inference backend — live on Modal (`serving/modal_app.py`):** a serverless-GPU app that loads the 4-bit base + LoRA adapter on a T4 and exposes a `/compare` endpoint the frontend proxies. It **scales to zero**, so it costs nothing while idle and stays within Modal's free monthly credit. Deploy with `modal deploy serving/modal_app.py` (after `modal token new` and a `huggingface` secret holding `HF_TOKEN`), then set `MODAL_COMPARE_URL` on Vercel to the printed endpoint. First request after idle pays a ~20–40 s cold start; subsequent calls take a few seconds. The legacy Gradio Space in `space/` remains as an alternative backend.
 
 ---
 

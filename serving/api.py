@@ -166,11 +166,15 @@ def _generate_one(
     model, tokenizer, messages: list[dict], max_new_tokens: int, tag: ModelTag
 ) -> tuple[str, int]:
     """Generate one response using the correct adapter (or base). Returns (text, ms)."""
-    # Use the tokenizer's official chat template — matches how Llama 3.2 was
-    # actually trained, rather than a hand-rolled approximation.
-    prompt = tokenizer.apply_chat_template(
-        messages, tokenize=False, add_generation_prompt=True
-    )
+    # Rebuild the EXACT training prompt. data/pipeline.py formatted training data
+    # with a hand-rolled Llama 3.2 template and a clean system prompt;
+    # tokenizer.apply_chat_template injects a "Cutting Knowledge Date" preamble
+    # (and a second BOS when re-tokenized), which is train/serve skew that makes the
+    # fine-tuned adapter degenerate. Match training byte-for-byte instead.
+    prompt = "<|begin_of_text|>"
+    for _m in messages:
+        prompt += f"<|start_header_id|>{_m['role']}<|end_header_id|>\n\n{_m['content']}<|eot_id|>"
+    prompt += "<|start_header_id|>assistant<|end_header_id|>\n\n"
     inputs = tokenizer(
         prompt, return_tensors="pt", truncation=True, max_length=1024
     ).to(model.device)

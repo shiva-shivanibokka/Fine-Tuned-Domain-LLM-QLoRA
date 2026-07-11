@@ -441,6 +441,7 @@ select.input:focus {
 .note { color: var(--faint); font-size: 0.84rem; }
 .callout {
   border-radius: 14px; padding: 0.9rem 1.1rem; font-size: 0.88rem; line-height: 1.6;
+  margin-block: 1.2rem;
   border: 1px solid color-mix(in srgb, var(--gold) 35%, var(--border));
   background: color-mix(in srgb, var(--gold) 7%, transparent); color: color-mix(in srgb, var(--gold) 78%, #fff);
 }

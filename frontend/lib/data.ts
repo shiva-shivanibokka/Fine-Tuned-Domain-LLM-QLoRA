@@ -58,6 +58,8 @@ export const MODEL_LABELS: Record<ModelTag, string> = {
 export const CLAUSE_TYPES = [
   "Governing Law",
   "Termination For Convenience",
+  "Limitation Of Liability",
+  "Indemnification",
   "Non-Compete",
   "IP Ownership Assignment",
   "Audit Rights",

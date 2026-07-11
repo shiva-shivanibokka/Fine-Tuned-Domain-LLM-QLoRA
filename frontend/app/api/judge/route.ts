@@ -32,9 +32,11 @@ Output B:
 ${b.finetuned_output || "(empty)"}
 
 Score EACH output 0-10 on:
-- faithfulness: does it accurately reflect the contract text?
-- completeness: does it capture the full relevant clause?
-- precision: is it free of irrelevant or hallucinated content?
+- faithfulness: does it accurately reflect the contract text? Text that is not supported by the excerpt (invented parties, unrelated clauses, boilerplate) is a hallucination and must score LOW.
+- completeness: does it capture the requested clause? Do NOT reward length — extra unrelated text does not add completeness.
+- precision: is it free of irrelevant or hallucinated content? A concise, exact extraction should score HIGH; an output padded with unrequested or fabricated text must score LOW.
+
+A short, exact answer is better than a long one that drifts off the clause. Judge the two outputs independently and do not assume the longer one is better.
 
 Respond with ONLY this JSON, no prose:
 {"A":{"faithfulness":n,"completeness":n,"precision":n},"B":{"faithfulness":n,"completeness":n,"precision":n}}`;

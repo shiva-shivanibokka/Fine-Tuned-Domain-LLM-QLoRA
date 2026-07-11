@@ -131,7 +131,7 @@ function ScoreCard({ title, scores, ft }: { title: string; scores: Scores; ft?: 
         <div className="bar-row" key={k} style={{ marginBottom: ".4rem" }}>
           <span className="bar-label" style={{ width: "5.5rem", fontSize: ".72rem" }}>{k}</span>
           <span className="bar-track" style={{ height: ".45rem" }}>
-            <span className="bar-fill" style={{ width: `${(v / 10) * 100}%`, background: ft ? "linear-gradient(90deg,#8b5cf6,#f5b642)" : "#6c6f95" }} />
+            <span className="bar-fill" style={{ width: `${(v / 10) * 100}%`, background: ft ? "linear-gradient(90deg,#8b5cf6,#f5b642)" : "linear-gradient(90deg,#38bdf8,#60a5fa)" }} />
           </span>
           <span className="bar-val" style={{ width: "1.4rem", fontSize: ".72rem" }}>{v}</span>
         </div>

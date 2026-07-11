@@ -104,11 +104,11 @@ body {
 .hero h1 {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(2.1rem, 5.4vw, 3.9rem);
-  line-height: 1.04;
+  font-size: clamp(1.8rem, 4.2vw, 3.1rem);
+  line-height: 1.08;
   letter-spacing: -0.03em;
   margin: 0 0 1rem;
-  max-width: 20ch;
+  max-width: 34ch; /* wide enough to land in two lines, not three */
 }
 .hero h1 .grad {
   background: var(--grad);
@@ -118,8 +118,8 @@ body {
 }
 .hero-lead {
   color: var(--muted);
-  font-size: clamp(1rem, 1.5vw, 1.18rem);
-  line-height: 1.7;
+  font-size: clamp(0.92rem, 1.2vw, 1.04rem);
+  line-height: 1.65;
   max-width: none; /* span the full content width */
   margin: 0;
 }
@@ -329,6 +329,34 @@ select.input:focus {
 }
 .btn-primary:hover:not(:disabled) { box-shadow: 0 14px 34px -12px var(--violet); }
 .btn:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+
+/* ---- Compare tab layout ---- */
+.example-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.chip-btn {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  color: var(--muted);
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.4rem 0.85rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+.chip-btn:hover { color: var(--text); border-color: var(--violet); }
+.chip-btn.active {
+  color: var(--text);
+  border-color: var(--violet);
+  background: color-mix(in srgb, var(--violet) 16%, var(--panel-2));
+}
+.cmp-controls { display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap; }
+.cmp-controls .field { flex: 1; min-width: 15rem; margin-bottom: 0; }
+.cmp-controls .cmp-run { white-space: nowrap; }
+.verdict-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.4rem; }
+@media (max-width: 720px) {
+  .verdict-row { grid-template-columns: 1fr; }
+  .cmp-controls .cmp-run { width: 100%; }
+}
 
 /* ---- verdict / output cards (Compare) ---- */
 .verdict {

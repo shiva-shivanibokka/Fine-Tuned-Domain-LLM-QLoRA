@@ -4,7 +4,16 @@ import { useState } from "react";
 import { CLAUSE_TYPES } from "@/lib/data";
 import JudgePanel from "@/app/components/JudgePanel";
 
-const SAMPLE_CONTRACT = `This Agreement shall be governed by and construed in accordance with the laws of the State of Delaware, without regard to its conflict of law provisions. Either party may terminate this Agreement for convenience upon thirty (30) days prior written notice to the other party. The Company shall indemnify and hold harmless the Contractor from any claims arising from the Company's breach of this Agreement. Neither party shall assign its rights or obligations under this Agreement without the prior written consent of the other party.`;
+// A realistic, CUAD-style excerpt (numbered sections, defined terms, dense
+// legalese) — the distribution the model was actually fine-tuned on. Short,
+// clean sentences are out-of-distribution and make the tuned model ramble.
+const SAMPLE_CONTRACT = `ARTICLE 14. MISCELLANEOUS.
+
+14.1 Governing Law. This Agreement, and all matters arising out of or relating to this Agreement, whether sounding in contract, tort, or statute, shall be governed by and construed in accordance with the internal laws of the State of New York, United States of America, without giving effect to any choice or conflict of law provision or rule (whether of the State of New York or any other jurisdiction) that would cause the application of the laws of any jurisdiction other than the State of New York.
+
+14.2 Assignment. Neither party may assign, transfer, or delegate any of its rights or obligations under this Agreement, in whole or in part, without the prior written consent of the other party, and any purported assignment in violation of this Section shall be null and void.
+
+14.3 Notices. All notices, requests, and other communications under this Agreement must be in writing and delivered to the addresses set forth on the signature page hereto.`;
 
 interface CompareResult {
   base_output?: string;
@@ -49,6 +58,16 @@ export default function CompareTab() {
           have another LLM grade them. It needs the GPU inference backend to be
           connected; the other three tabs work without it.
         </span>
+      </div>
+
+      <div className="callout">
+        <strong>What to watch for.</strong> The fine-tuned model often
+        over-generates — it drifts past the clause or invents contract language.
+        That is the whole point of this project: it and the base model score
+        almost identically on overlap (BERTScore 0.47 vs 0.49), yet the tuned one
+        hallucinates far more. A single similarity number hides that gap — which
+        is why the <em>Failure Modes</em> and <em>Ablation &amp; Trust</em> tabs
+        measure grounding and calibration instead of just overlap.
       </div>
 
       <section className="panel">

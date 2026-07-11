@@ -25,7 +25,7 @@ import modal
 
 BASE_MODEL_ID = "meta-llama/Llama-3.2-3B-Instruct"
 ADAPTER_REPO = "shiva-1993/llama-3.2-3b-cuad-dpo"  # fine-tuned QLoRA+DPO adapter on HF Hub
-MAX_NEW_TOKENS = 128
+MAX_NEW_TOKENS = 96  # a single clause is short; caps rambling on OOD inputs + cheaper GPU time
 
 SYSTEM_PROMPT = (
     "You are a legal contract analysis expert. "
@@ -48,6 +48,7 @@ image = (
         "transformers>=4.45",
         "peft>=0.13",
         "accelerate>=1.0",
+        "bitsandbytes>=0.43",  # 4-bit NF4 base loading, to match QLoRA training
         "hf_transfer",
         "fastapi[standard]",
     )
@@ -56,6 +57,30 @@ image = (
 
 app = modal.App("cuad-legal-llm")
 hf_cache = modal.Volume.from_name("cuad-hf-cache", create_if_missing=True)
+
+
+def _format_prompt(contract_text: str, clause_type: str) -> str:
+    """Rebuild the EXACT prompt string the model was trained/evaluated on.
+
+    Training (data/pipeline.py) and eval (evaluation/evaluator.py) used this
+    hand-rolled Llama 3.2 template with a clean system prompt — NOT
+    tokenizer.apply_chat_template, which injects a "Cutting Knowledge Date"
+    preamble. Feeding the tuned adapter the wrong system section makes it
+    ignore the instruction and recite memorized document text.
+    """
+    user_content = INSTRUCTION_TEMPLATE.format(
+        clause_type=clause_type, contract_text=contract_text[:2500]
+    )
+    messages = [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "user", "content": user_content},
+    ]
+    result = "<|begin_of_text|>"
+    for msg in messages:
+        result += f"<|start_header_id|>{msg['role']}<|end_header_id|>\n\n"
+        result += f"{msg['content']}<|eot_id|>"
+    result += "<|start_header_id|>assistant<|end_header_id|>\n\n"
+    return result
 
 
 class _nullctx:
@@ -81,7 +106,11 @@ class CUADModel:
 
         import torch
         from peft import PeftModel
-        from transformers import AutoModelForCausalLM, AutoTokenizer
+        from transformers import (
+            AutoModelForCausalLM,
+            AutoTokenizer,
+            BitsAndBytesConfig,
+        )
 
         token = os.environ.get("HF_TOKEN")
         self.torch = torch
@@ -89,27 +118,29 @@ class CUADModel:
         self.tokenizer.pad_token = self.tokenizer.eos_token
         self.tokenizer.padding_side = "left"
 
-        # fp16 (not bf16): the T4 is Turing and lacks native bf16 — fp16 is faster.
+        # Match training/eval EXACTLY: the QLoRA adapter was trained against a
+        # 4-bit NF4 base. Serving it on a full-precision base shifts activations
+        # enough that the tuned model degenerates into reciting memorized text,
+        # so we load the base in 4-bit here too. fp16 compute is T4-friendly.
+        bnb = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_use_double_quant=True,
+            bnb_4bit_compute_dtype=torch.float16,
+        )
         base = AutoModelForCausalLM.from_pretrained(
-            BASE_MODEL_ID, torch_dtype=torch.float16, token=token
+            BASE_MODEL_ID,
+            quantization_config=bnb,
+            device_map={"": 0},
+            token=token,
         )
         self.model = PeftModel.from_pretrained(base, ADAPTER_REPO, token=token)
-        self.model.eval().to("cuda")
+        self.model.eval()
 
     def _generate(self, contract_text: str, clause_type: str, base: bool):
         torch = self.torch
-        messages = [
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {
-                "role": "user",
-                "content": INSTRUCTION_TEMPLATE.format(
-                    clause_type=clause_type, contract_text=contract_text[:600]
-                ),
-            },
-        ]
-        prompt = self.tokenizer.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=True
-        )
+        # Same prompt string + tokenization as evaluation/evaluator.py.
+        prompt = _format_prompt(contract_text, clause_type)
         inputs = self.tokenizer(
             prompt, return_tensors="pt", truncation=True, max_length=1024
         ).to("cuda")
